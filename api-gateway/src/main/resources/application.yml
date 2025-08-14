@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: GATEWAY-SERVICE
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: payment-service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/payment/**
+              filters:
+                - name: Authentication
+                - name: CircuitBreaker
+                  args:
+                    name: paymentCircuitBreaker
+                    fallbackUri: forward:/paymentFallBack
+
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/order/**
+              filters:
+                - name: Authentication
+                - name: CircuitBreaker
+                  args:
+                    name: orderCircuitBreaker
+                    fallbackUri: forward:/orderFallBack
+
+            - id: identity-service
+              uri: lb://IDENTITY-SERVICE
+              predicates:
+                - Path=/auth/**
+              filters:
+                - name: Authentication
+                - name: CircuitBreaker
+                  args:
+                    name: identityCircuitBreaker
+                    fallbackUri: forward:/identityFallBack
+
+server:
+  port: 8989
+
+auth:
+  service:
+    url: http://IDENTITY-SERVICE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream, health, info
+
+hystrix:
+  command:
+    fallback:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
