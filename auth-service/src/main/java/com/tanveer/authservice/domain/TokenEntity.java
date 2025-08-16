@@ -1,4 +1,4 @@
-package com.tanveer.authservice.entity;
+package com.tanveer.authservice.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,6 +37,6 @@ public class TokenEntity {
   public boolean expired;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_entity_id")
   public UserEntity userEntity;
 }

@@ -35,7 +35,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
   @Autowired
   public JwtAuthorizationFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
-                                 JwtService jwtService, UserDetailsService userDetailsService, TokenRepository tokenRepository) {
+                                JwtService jwtService, UserDetailsService userDetailsService, TokenRepository tokenRepository) {
     this.exceptionResolver = exceptionResolver;
     this.jwtService = jwtService;
     this.userDetailsService = userDetailsService;

@@ -1,6 +1,6 @@
 package com.tanveer.authservice.dto;
 
-import com.tanveer.authservice.entity.UserEntity;
+import com.tanveer.authservice.domain.UserEntity;
 
 import java.util.UUID;
 

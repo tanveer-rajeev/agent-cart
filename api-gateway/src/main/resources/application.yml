@@ -33,13 +33,24 @@ spring:
             - id: identity-service
               uri: lb://IDENTITY-SERVICE
               predicates:
-                - Path=/auth/**
+                - Path=/api/v1/auth/**
               filters:
                 - name: Authentication
                 - name: CircuitBreaker
                   args:
                     name: identityCircuitBreaker
                     fallbackUri: forward:/identityFallBack
+
+            - id: product-service
+              uri: lb://PRODUCT-SERVICE
+              predicates:
+                - Path=/api/v1/products/**
+              filters:
+                - name: Authentication
+                - name: CircuitBreaker
+                  args:
+                    name: productCircuitBreaker
+                    fallbackUri: forward:/productFallBack
 
 server:
   port: 8989

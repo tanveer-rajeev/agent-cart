@@ -1,6 +1,6 @@
 package com.tanveer.authservice.config;
 
-import com.tanveer.authservice.entity.UserEntity;
+import com.tanveer.authservice.domain.UserEntity;
 import com.tanveer.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

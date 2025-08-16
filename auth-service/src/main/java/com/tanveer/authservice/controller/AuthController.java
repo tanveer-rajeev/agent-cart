@@ -3,7 +3,7 @@ package com.tanveer.authservice.controller;
 import com.tanveer.authservice.dto.AuthResponse;
 import com.tanveer.authservice.dto.LoginRequestDTO;
 import com.tanveer.authservice.dto.UserResponseDTO;
-import com.tanveer.authservice.entity.UserEntity;
+import com.tanveer.authservice.domain.UserEntity;
 import com.tanveer.authservice.exception.CustomException;
 import com.tanveer.authservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/auth/v1")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {

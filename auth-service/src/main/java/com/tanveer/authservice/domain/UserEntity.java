@@ -1,4 +1,4 @@
-package com.tanveer.authservice.entity;
+package com.tanveer.authservice.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_entity")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,5 +26,4 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String role;
-
 }

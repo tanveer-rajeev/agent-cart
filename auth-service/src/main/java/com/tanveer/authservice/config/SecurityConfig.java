@@ -36,7 +36,7 @@ public class SecurityConfig {
     "/swagger-resources/**", "/swagger-resources",
     "/configuration-ui", "/configuration/security",
     "/webjars/**", "/v2/api-docs", "/v3/api-docs", "/v3/api-docs/**",
-    "/auth/v1/signup", "/auth/v1/login"};
+    "/api/v1/auth/signup", "/api/v1/auth/login"};
 
 
   @Bean

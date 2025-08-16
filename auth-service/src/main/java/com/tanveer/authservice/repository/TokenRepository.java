@@ -1,6 +1,6 @@
 package com.tanveer.authservice.repository;
 
-import com.tanveer.authservice.entity.TokenEntity;
+import com.tanveer.authservice.domain.TokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
