@@ -1,4 +1,4 @@
-package com.tanveer.authservice.config;
+package com.tanveer.authservice.serviceImpl;
 
 import com.tanveer.authservice.domain.UserEntity;
 import com.tanveer.authservice.repository.UserRepository;

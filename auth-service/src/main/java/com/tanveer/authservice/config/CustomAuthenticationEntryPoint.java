@@ -1,5 +1,6 @@
 package com.tanveer.authservice.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tanveer.authservice.dto.ApiResponse;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

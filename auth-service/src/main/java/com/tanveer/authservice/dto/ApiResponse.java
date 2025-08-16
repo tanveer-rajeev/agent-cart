@@ -1,4 +1,4 @@
-package com.tanveer.authservice.config;
+package com.tanveer.authservice.dto;
 
 import lombok.*;
 

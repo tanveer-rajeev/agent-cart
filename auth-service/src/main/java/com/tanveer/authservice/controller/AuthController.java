@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,20 +46,19 @@ public class AuthController {
   @Operation(summary = "Signup for new user")
   @PostMapping("/signup")
   public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody UserEntity userEntity) throws CustomException {
-    return ResponseEntity.status(200).body(authService.saveUser(userEntity));
+    return ResponseEntity.status(201).body(authService.saveUser(userEntity));
   }
 
   @Operation(summary = "Generate token on user login")
   @PostMapping("/login")
-  public ResponseEntity<AuthResponse> login(@RequestBody LoginRequestDTO loginRequestDTO) throws CustomException {
-    log.debug("enter login method");
-
+  public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) throws CustomException {
     return ResponseEntity.ok(authService.authenticate(loginRequestDTO));
   }
 
+  @Operation(summary = "Validate jwt token")
   @GetMapping("/validate")
-  public String validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws CustomException {
+  public ResponseEntity<HttpStatus> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws CustomException {
     authService.validateToken(token);
-    return "Token is valid";
+    return ResponseEntity.ok().body(HttpStatus.ACCEPTED);
   }
 }

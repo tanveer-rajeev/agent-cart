@@ -1,5 +1,6 @@
 package com.tanveer.authservice.config;
 
+import com.tanveer.authservice.serviceImpl.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
