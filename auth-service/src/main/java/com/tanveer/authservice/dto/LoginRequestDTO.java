@@ -11,7 +11,7 @@ public class LoginRequestDTO {
   private String email;
 
   @NotBlank(message = "Password is required")
-  @Size(min = 8, message = "Password must be at least 8 characters long")
+  @Size(min = 3, message = "Password must be at least 3 characters long")
   private String password;
 
   public @NotBlank(message = "Email is required") @Email(message = "Email should be a valid email address") String getEmail() {
@@ -23,12 +23,12 @@ public class LoginRequestDTO {
     this.email = email;
   }
 
-  public @NotBlank(message = "Password is required") @Size(min = 8, message = "Password must be at least 8 characters long") String getPassword() {
+  public @NotBlank(message = "Password is required") @Size(min = 3, message = "Password must be at least 3 characters long") String getPassword() {
     return password;
   }
 
   public void setPassword(
-    @NotBlank(message = "Password is required") @Size(min = 8, message = "Password must be at least 8 characters long") String password) {
+    @NotBlank(message = "Password is required") @Size(min = 3, message = "Password must be at least 3 characters long") String password) {
     this.password = password;
   }
 }
