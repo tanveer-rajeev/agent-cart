@@ -42,11 +42,13 @@ public class ProductServiceImpl implements ProductService {
 
     log.info("Saving product {}", productRequestDto.sku());
 
-    repository.save(product);
+    ProductEntity productEntity = repository.save(product);
 
     log.info("Adding event for {}", productRequestDto.sku());
 
-    Product domain = ProductMapper.toDomain(product);
+    Product domain = ProductMapper.toDomain(productEntity);
+
+    log.info("Domain id {}", domain.getId());
 
     ProductEvent event = Product.createEvent(domain.getId(), domain.getSku(), domain.getQuantity(),
       EventType.PRODUCT_CREATED.value(), Instant.now());

@@ -8,6 +8,7 @@ import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrustructure.mapper.InventoryMapper;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class InventoryServiceImpl implements InventoryService {
@@ -59,3 +60,6 @@ public class InventoryServiceImpl implements InventoryService {
     return updatedInventory;
   }
 }
+// Inventory consume product with sku and quantity
+// if product already exist then it will update inventory
+// if not then create new inventory with product sku and quantity

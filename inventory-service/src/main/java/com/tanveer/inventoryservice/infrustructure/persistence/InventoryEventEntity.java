@@ -25,6 +25,7 @@ public class InventoryEventEntity extends EventEntity {
 
   @Column(name = "event_type")
   private String eventType;
+
   protected InventoryEventEntity(){
     super();
   }

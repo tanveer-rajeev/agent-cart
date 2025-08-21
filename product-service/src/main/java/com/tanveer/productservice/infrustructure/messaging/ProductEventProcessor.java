@@ -37,8 +37,6 @@ public class ProductEventProcessor implements EventService {
         if (topic == null) {
           log.warn("No topic configured for event type {}", eventType);
         } else {
-          log.info("Sku value is {}",event.getSku());
-          log.info("Payload value is {}",event.getPayload());
           kafkaTemplate.send(topic, event.getAggregateId().toString(), event.getPayload());
           log.info("Sent {} event to topic {}", eventType, topic);
         }
