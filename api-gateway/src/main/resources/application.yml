@@ -52,6 +52,17 @@ spring:
                     name: productCircuitBreaker
                     fallbackUri: forward:/productFallBack
 
+            - id: product-service
+              uri: lb://INVENTORY-SERVICE
+              predicates:
+                - Path=/api/v1/inventories/**
+              filters:
+                - name: Authentication
+                - name: CircuitBreaker
+                  args:
+                    name: productCircuitBreaker
+                    fallbackUri: forward:/inventoryFallBack
+
 server:
   port: 8989
 
