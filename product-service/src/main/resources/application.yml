@@ -1,0 +1,40 @@
+
+server:
+  port: 9091
+
+spring:
+  application:
+    name: product-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/product_service
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+topic:
+  map:
+    PRODUCT_CREATED: product-created
+    PRODUCT_UPDATED: product-updated
+
+logging:
+  level:
+    root: INFO
+    com.tanveer.product-service: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
