@@ -10,23 +10,28 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @Entity
 @Table(name = "inventory_events", indexes = {
-  @Index(name = "idx_inventory_events_sku_published", columnList = "sku, published")
+        @Index(name = "idx_inventory_events_sku_published", columnList = "sku, published")
 })
 public class InventoryEventEntity extends EventEntity {
 
-  @Column(unique = true, nullable = false)
-  private String sku;
+    @Column(unique = true, nullable = false)
+    private String sku;
 
-  @Column(name = "event_type")
-  private String eventType;
+    @Column(name = "event_type")
+    private String eventType;
 
-  protected InventoryEventEntity(){
-    super();
-  }
+    @Column(name = "correlationId",unique = true, nullable = false)
+    private UUID correlationId;
+
+    protected InventoryEventEntity() {
+        super();
+    }
 }

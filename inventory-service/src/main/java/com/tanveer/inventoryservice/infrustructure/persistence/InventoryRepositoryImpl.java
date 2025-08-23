@@ -12,20 +12,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InventoryRepositoryImpl implements InventoryRepository {
 
-  private final InventoryJpaRepository repository;
+    private final InventoryJpaRepository repository;
 
-  @Override
-  public Inventory findBySku(String sku) {
-    Optional<InventoryEntity> inventoryEntity = repository.findBySku(sku);
-    if(inventoryEntity.isEmpty()){
-      return InventoryMapper.toDomain(InventoryEntity.builder().sku(sku).build());
+    @Override
+    public Inventory findBySku(String sku) {
+        Optional<InventoryEntity> inventoryEntity = repository.findBySku(sku);
+        return inventoryEntity.map(InventoryMapper::toDomain).orElseGet(() -> InventoryMapper.toDomain(InventoryEntity.builder().sku(sku).build()));
     }
-    InventoryEntity inventory = inventoryEntity.get();
-    return InventoryMapper.toDomain(inventory);
-  }
 
-  @Override
-  public Inventory save(Inventory inventory) {
-    return InventoryMapper.toDomain(repository.save(InventoryMapper.toEntity(inventory)));
-  }
+    @Override
+    public Inventory save(Inventory inventory) {
+        return InventoryMapper.toDomain(repository.save(InventoryMapper.toEntity(inventory)));
+    }
 }

@@ -5,61 +5,83 @@ import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryEvent;
 import com.tanveer.inventoryservice.domain.InventoryRepository;
 import com.tanveer.inventoryservice.domain.InventoryService;
+import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrustructure.mapper.InventoryMapper;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
+@Slf4j
 public class InventoryServiceImpl implements InventoryService {
 
-  private final InventoryRepository inventoryRepository;
-  private final EventRepository<InventoryEvent> eventRepository;
+    private final InventoryRepository inventoryRepository;
+    private final EventRepository<InventoryEvent> eventRepository;
 
-  public InventoryServiceImpl(InventoryRepository inventoryRepository,
-                              EventRepository<InventoryEvent> eventRepository) {
-    this.inventoryRepository = inventoryRepository;
-    this.eventRepository = eventRepository;
-  }
+    public InventoryServiceImpl(InventoryRepository inventoryRepository,
+                                EventRepository<InventoryEvent> eventRepository) {
+        this.inventoryRepository = inventoryRepository;
+        this.eventRepository = eventRepository;
+    }
 
-  @Override
-  public InventoryResponseDto getInventoryBySku(String sku) {
-    return InventoryMapper.toResponseDto(inventoryRepository.findBySku(sku));
-  }
+    @Override
+    public InventoryResponseDto getInventoryBySku(String sku) {
+        return InventoryMapper.toResponseDto(inventoryRepository.findBySku(sku));
+    }
 
-  @Override
-  public InventoryResponseDto createInventory(Inventory request) {
-    return InventoryMapper.toResponseDto(inventoryRepository.save(request));
-  }
+    @Override
+    public InventoryResponseDto createInventory(InventoryRequestDto request) {
+        log.info("Creating inventory {}",request.correlationId());
+        Inventory inventory = inventoryRepository.save(Inventory.create(
+                UUID.randomUUID(),
+                request.correlationId(),
+                request.sku(),
+                request.availableQty(),
+                request.reserveQty()
+        ));
+        publishEvents(inventory);
+        return InventoryMapper.toResponseDto(inventory);
+    }
 
-  @Override
-  public InventoryResponseDto reserveStock(String sku, int quantity) {
-    return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.reserve(quantity)));
-  }
+    @Override
+    public InventoryResponseDto reserveStock(String sku, int quantity) {
+        return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.reserve(quantity)));
+    }
 
-  @Override
-  public InventoryResponseDto releaseStock(String sku, int quantity) {
-    return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.release(quantity)));
-  }
+    @Override
+    public InventoryResponseDto releaseStock(String sku, int quantity) {
+        return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.release(quantity)));
+    }
 
-  @Override
-  public InventoryResponseDto adjustStock(String sku, int quantity) {
-    return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.adjust(quantity)));
-  }
+    @Override
+    public InventoryResponseDto adjustStock(String sku, int quantity) {
+        return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.adjust(quantity)));
+    }
 
-  private Inventory executeInventoryAction(String sku, Function<Inventory, Inventory> action) {
+    private Inventory executeInventoryAction(String sku, Function<Inventory, Inventory> action) {
 
-    Inventory inventory = inventoryRepository.findBySku(sku);
+        Inventory inventory = inventoryRepository.findBySku(sku);
 
-    Inventory updatedInventory = action.apply(inventory);
+        Inventory updatedInventory = action.apply(inventory);
 
-    inventoryRepository.save(updatedInventory);
+        log.info("Inventory is saving {}", inventory);
 
-    updatedInventory.pullDomainEvents().forEach(eventRepository::saveEvent);
+        inventoryRepository.save(updatedInventory);
 
-    return updatedInventory;
-  }
+        log.info("Inventory outbox event saving {}", inventory);
+
+        publishEvents(updatedInventory);
+
+        return updatedInventory;
+    }
+
+    public Inventory updateInventory(Inventory inventory) {
+        log.info("updateInventory in action {}", inventory);
+        return inventory;
+    }
+
+    private void publishEvents(Inventory inventory) {
+        inventory.pullDomainEvents().forEach(eventRepository::saveEvent);
+    }
 }
-// Inventory consume product with sku and quantity
-// if product already exist then it will update inventory
-// if not then create new inventory with product sku and quantity

@@ -22,25 +22,27 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "inventories",indexes = {
-  @Index(name = "idx_inventories_sku", columnList = "sku")
+@Table(name = "inventories", indexes = {
+        @Index(name = "idx_inventories_sku", columnList = "sku")
 })
 public class InventoryEntity {
-  @Id
-  @GeneratedValue
-  @UuidGenerator
-  @Column(updatable = false, nullable = false)
-  private UUID id;
 
-  @Column(unique = true, nullable = false)
-  private String sku;
+    @Id
+    @Column(updatable = false, nullable = false)
+    private UUID id;
 
-  @Column(name = "available_qty", nullable = false)
-  private int availableQty;
+    @Column(unique = true, nullable = false)
+    private UUID correlationId;
 
-  @Column(name = "reserved_qty", nullable = false)
-  private int reservedQty;
+    @Column(unique = true, nullable = false)
+    private String sku;
 
-  @Version
-  private int version;
+    @Column(name = "available_qty", nullable = false)
+    private int availableQty;
+
+    @Column(name = "reserved_qty", nullable = false)
+    private int reservedQty;
+
+    @Version
+    private int version;
 }

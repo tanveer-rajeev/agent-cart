@@ -1,4 +1,6 @@
 package com.tanveer.inventoryservice.infrustructure.dto;
 
-public record InventoryRequestDto(String sku,int availableQty,int reserveQty) {
+import java.util.UUID;
+
+public record InventoryRequestDto(UUID correlationId, String sku, int availableQty, int reserveQty) {
 }

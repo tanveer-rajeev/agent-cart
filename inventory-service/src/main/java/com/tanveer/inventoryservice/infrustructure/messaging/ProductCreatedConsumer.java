@@ -1,8 +1,7 @@
 package com.tanveer.inventoryservice.infrustructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tanveer.inventoryservice.domain.InventoryService;
-import com.tanveer.inventoryservice.infrustructure.dto.ProductCreatedEventDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ProductEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,22 +10,28 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ProductCreatedConsumer {
-  private final ObjectMapper objectMapper;
-  private final InventoryService inventoryService;
+public class ProductCreatedConsumer implements EventConsumer {
 
-  @KafkaListener(topics = "product-created", groupId = "inventory-service-01")
-  public void consume(String message) {
-    try {
-      log.info("Message: {}", message);
+    private final ObjectMapper objectMapper;
+    private final ProductEventHandler handler;
 
-      ProductCreatedEventDto event = objectMapper.readValue(message, ProductCreatedEventDto.class);
-      log.info("Received ProductCreated event: {}", event);
+    @Override
+    @KafkaListener(topics = {"product-created", "product-updated", "product-released"}, groupId = "inventory-service-01")
+    public void consume(String message) {
+        try {
+            log.info("Message: {}", message);
 
-      inventoryService.adjustStock(event.sku(), event.quantity());
+            ProductEventDto event = objectMapper.readValue(message, ProductEventDto.class);
 
-    } catch (Exception e) {
-      log.error("Error processing ProductCreated event", e);
+            log.info("Deserialized: {}", message);
+
+            switch (event.eventType()) {
+                case PRODUCT_CREATED -> handler.handleProductCreated(event);
+                case PRODUCT_UPDATED -> handler.handleProductUpdated(event);
+                case PRODUCT_RESERVED -> handler.handleProductReleased(event);
+            }
+        } catch (Exception e) {
+            log.error("Error processing ProductCreated event", e);
+        }
     }
-  }
 }

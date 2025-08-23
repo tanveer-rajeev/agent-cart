@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfig {
 
-  @Bean
-  public InventoryService inventoryService(InventoryRepository inventoryRepository, EventRepository eventRepository) {
-    return new InventoryServiceImpl(inventoryRepository, eventRepository);
-  }
+    @Bean
+    public InventoryService inventoryService(InventoryRepository inventoryRepository, EventRepository eventRepository) {
+        return new InventoryServiceImpl(inventoryRepository, eventRepository);
+    }
 
-  @Bean
-  public JavaTimeModule javaTimeModule() {
-    return new JavaTimeModule();
-  }
+    @Bean
+    public JavaTimeModule javaTimeModule() {
+        return new JavaTimeModule();
+    }
 
 }

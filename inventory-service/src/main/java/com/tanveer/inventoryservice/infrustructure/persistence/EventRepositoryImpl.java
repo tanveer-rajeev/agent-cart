@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EventRepositoryImpl implements EventRepository<InventoryEvent> {
 
-  private final EventJpaRepository repository;
+    private final EventJpaRepository repository;
 
-  @Override
-  public void saveEvent(InventoryEvent event) {
-      repository.save(InventoryEventMapper.toEntity(event));
-  }
+    @Override
+    public void saveEvent(InventoryEvent event) {
+        repository.save(InventoryEventMapper.toEntity(event));
+    }
 }

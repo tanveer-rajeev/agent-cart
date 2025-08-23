@@ -19,30 +19,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/inventories")
 public class InventoryController {
 
-  private final InventoryService inventoryService;
+    private final InventoryService inventoryService;
 
-  @GetMapping("/{sku}")
-  public InventoryResponseDto getBySku(@PathVariable String sku) {
-    return inventoryService.getInventoryBySku(sku);
-  }
+    @GetMapping("/{sku}")
+    public InventoryResponseDto getBySku(@PathVariable String sku) {
+        return inventoryService.getInventoryBySku(sku);
+    }
 
-  @PostMapping
-  public InventoryResponseDto createInventory(@RequestBody Inventory request) {
-    return inventoryService.createInventory(request);
-  }
+    @PostMapping
+    public ResponseEntity<InventoryResponseDto> createInventory(@RequestBody InventoryRequestDto request) {
+        return ResponseEntity.status(HttpStatus.OK).body(inventoryService.createInventory(request));
+    }
 
-  @PostMapping("/adjust/{sku}/{quantity}")
-  public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity) {
-    return ResponseEntity.status(HttpStatus.OK).body(inventoryService.adjustStock(sku, quantity));
-  }
+    @PostMapping("/adjust/{sku}/{quantity}")
+    public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity) {
+        return ResponseEntity.status(HttpStatus.OK).body(inventoryService.adjustStock(sku, quantity));
+    }
 
-  @PostMapping("/release/{sku}/{quantity}")
-  public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity) {
-    return ResponseEntity.status(HttpStatus.OK).body(inventoryService.releaseStock(sku, quantity));
-  }
+    @PostMapping("/release/{sku}/{quantity}")
+    public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity) {
+        return ResponseEntity.status(HttpStatus.OK).body(inventoryService.releaseStock(sku, quantity));
+    }
 
-  @PostMapping("/reverse/{sku}/{quantity}")
-  public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity) {
-    return ResponseEntity.status(HttpStatus.OK).body(inventoryService.reserveStock(sku, quantity));
-  }
+    @PostMapping("/reverse/{sku}/{quantity}")
+    public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity) {
+        return ResponseEntity.status(HttpStatus.OK).body(inventoryService.reserveStock(sku, quantity));
+    }
 }

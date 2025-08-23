@@ -22,7 +22,6 @@ public class ProductEventMapper {
     payloadMap.put("aggregateId", event.getAggregateId());
     payloadMap.put("eventType", event.getEventType());
     payloadMap.put("sku", event.getSku());
-    payloadMap.put("quantity", event.getQuantity());
     payloadMap.put("occurredAt", event.getOccurredAt() != null ? event.getOccurredAt().toString() : null);
     try {
       return ProductEventEntity.builder()
@@ -33,7 +32,6 @@ public class ProductEventMapper {
         .published(false)
         .occurredAt(event.getOccurredAt())
         .sku(event.getSku())
-        .quantity(event.getQuantity())
         .build();
     } catch (Exception e) {
       throw new RuntimeException("Failed to serialize event", e);

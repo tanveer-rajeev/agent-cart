@@ -1,10 +1,11 @@
 package com.tanveer.inventoryservice.domain;
 
 public enum EventType {
-  PRODUCT_CREATED("product-created"),
+  INVENTORY_CREATED("inventory-created"),
   INVENTORY_RESERVED("inventory.reserved"),
   INVENTORY_RELEASED("inventory.released"),
-  INVENTORY_REPLENISHED("inventory.replenished");
+  INVENTORY_ADJUST("inventory.adjust");
+
 
   private final String value;
 

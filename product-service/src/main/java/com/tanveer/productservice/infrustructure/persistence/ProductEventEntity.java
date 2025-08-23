@@ -24,7 +24,4 @@ public class ProductEventEntity extends EventEntity {
 
   @Column(unique = true,nullable = false)
   private String sku;
-
-  @Column(nullable = false)
-  private int quantity;
 }

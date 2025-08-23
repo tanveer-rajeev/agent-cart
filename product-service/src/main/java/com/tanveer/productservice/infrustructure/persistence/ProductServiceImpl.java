@@ -1,7 +1,6 @@
 package com.tanveer.productservice.infrustructure.persistence;
 
 import com.tanveer.commonlib.domain.EventRepository;
-import com.tanveer.productservice.domain.EventType;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.domain.ProductEvent;
 import com.tanveer.productservice.domain.ProductService;
@@ -13,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -31,29 +30,19 @@ public class ProductServiceImpl implements ProductService {
     if (repository.findBySku(productRequestDto.sku()).isPresent()) {
       throw new IllegalArgumentException("SKU already exists");
     }
-
-    ProductEntity product = ProductEntity.builder()
-      .name(productRequestDto.name())
-      .description(productRequestDto.description())
-      .quantity(productRequestDto.quantity())
-      .sku(productRequestDto.sku())
-      .price(productRequestDto.price())
-      .build();
+      Product domain = Product.create(
+              UUID.randomUUID(),
+              productRequestDto.name(),
+              productRequestDto.description(),
+              productRequestDto.sku(),
+              productRequestDto.price()
+      );
 
     log.info("Saving product {}", productRequestDto.sku());
 
-    ProductEntity productEntity = repository.save(product);
+    repository.save(ProductMapper.toEntity(domain));
 
     log.info("Adding event for {}", productRequestDto.sku());
-
-    Product domain = ProductMapper.toDomain(productEntity);
-
-    log.info("Domain id {}", domain.getId());
-
-    ProductEvent event = Product.createEvent(domain.getId(), domain.getSku(), domain.getQuantity(),
-      EventType.PRODUCT_CREATED.value(), Instant.now());
-
-    domain = domain.addDomainEvent(event);
 
     domain.pullDomainEvents().forEach(eventRepository::saveEvent);
 

@@ -25,12 +25,9 @@ import java.util.UUID;
 public class ProductEntity {
 
   @Id
-  @GeneratedValue
-  @UuidGenerator
   private UUID id;
   private String name;
   private String description;
-  private int quantity;
   @Column(unique = true, nullable = false)
   private String sku;
   private Long price;

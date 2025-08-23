@@ -6,32 +6,32 @@ import com.tanveer.inventoryservice.infrustructure.persistence.InventoryEntity;
 
 public class InventoryMapper {
 
-  public static InventoryEntity toEntity(Inventory domain) {
-    return InventoryEntity.builder()
-      .id(domain.getId())
-      .sku(domain.getSku())
-      .availableQty(domain.getAvailableQty())
-      .reservedQty(domain.getReservedQty())
-      .version(domain.getVersion())
-      .build();
-  }
+    public static InventoryEntity toEntity(Inventory domain) {
+        return InventoryEntity.builder()
+                .id(domain.getId())
+                .sku(domain.getSku())
+                .availableQty(domain.getAvailableQty())
+                .reservedQty(domain.getReservedQty())
+                .correlationId(domain.getCorrelationId())
+                .build();
+    }
 
-  public static Inventory toDomain(InventoryEntity entity) {
-    return  Inventory.create(
-      entity.getId(),
-      entity.getSku(),
-      entity.getAvailableQty(),
-      entity.getReservedQty(),
-      entity.getVersion()
-    );
-  }
+    public static Inventory toDomain(InventoryEntity entity) {
+        return Inventory.create(
+                entity.getId(),
+                entity.getCorrelationId(),
+                entity.getSku(),
+                entity.getAvailableQty(),
+                entity.getReservedQty()
+        );
+    }
 
-  public static InventoryResponseDto toResponseDto(Inventory inventory) {
-    return new InventoryResponseDto(
-      inventory.getSku(),
-      inventory.getAvailableQty(),
-      inventory.getReservedQty()
-    );
-  }
+    public static InventoryResponseDto toResponseDto(Inventory inventory) {
+        return new InventoryResponseDto(
+                inventory.getSku(),
+                inventory.getAvailableQty(),
+                inventory.getReservedQty()
+        );
+    }
 }
 

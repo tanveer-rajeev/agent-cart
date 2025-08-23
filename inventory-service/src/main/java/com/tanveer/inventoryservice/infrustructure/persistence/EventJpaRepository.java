@@ -8,6 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface EventJpaRepository extends JpaRepository<InventoryEventEntity, UUID> {
-
-   List<InventoryEventEntity> findByPublishedFalse();
+    List<InventoryEventEntity> findByPublishedFalse();
 }
