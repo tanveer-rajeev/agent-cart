@@ -1,4 +1,4 @@
-package com.tanveer.productservice.infrustructure.persistence;
+package com.tanveer.productservice.application;
 
 import com.tanveer.commonlib.domain.EventRepository;
 import com.tanveer.productservice.domain.Product;
@@ -7,22 +7,20 @@ import com.tanveer.productservice.domain.ProductService;
 import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
 import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
+import com.tanveer.productservice.infrustructure.persistence.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@Service
 @Slf4j
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl{
 
   private final ProductRepository repository;
   private final EventRepository<ProductEvent> eventRepository;
 
-  @Transactional
+
   public ProductResponseDto addProduct(ProductRequestDto productRequestDto) {
 
     log.info("Creating product {}", productRequestDto.sku());
@@ -51,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
     return ProductMapper.toResponseDto(domain);
   }
 
-  @Override
+
   public ProductResponseDto updateProduct(String sku) {
     return null;
   }

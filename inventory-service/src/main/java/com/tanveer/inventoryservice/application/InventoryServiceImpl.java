@@ -8,29 +8,23 @@ import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrustructure.mapper.InventoryMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 import java.util.function.Function;
 
+@RequiredArgsConstructor
 @Slf4j
-public class InventoryServiceImpl implements InventoryService {
+public class InventoryServiceImpl{
 
     private final InventoryRepository inventoryRepository;
     private final EventRepository<InventoryEvent> eventRepository;
 
-    public InventoryServiceImpl(InventoryRepository inventoryRepository,
-                                EventRepository<InventoryEvent> eventRepository) {
-        this.inventoryRepository = inventoryRepository;
-        this.eventRepository = eventRepository;
-    }
-
-    @Override
     public InventoryResponseDto getInventoryBySku(String sku) {
         return InventoryMapper.toResponseDto(inventoryRepository.findBySku(sku));
     }
 
-    @Override
     public InventoryResponseDto createInventory(InventoryRequestDto request) {
         log.info("Creating inventory {}",request.correlationId());
         Inventory inventory = inventoryRepository.save(Inventory.create(
@@ -44,17 +38,14 @@ public class InventoryServiceImpl implements InventoryService {
         return InventoryMapper.toResponseDto(inventory);
     }
 
-    @Override
     public InventoryResponseDto reserveStock(String sku, int quantity) {
         return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.reserve(quantity)));
     }
 
-    @Override
     public InventoryResponseDto releaseStock(String sku, int quantity) {
         return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.release(quantity)));
     }
 
-    @Override
     public InventoryResponseDto adjustStock(String sku, int quantity) {
         return InventoryMapper.toResponseDto(executeInventoryAction(sku, inventory -> inventory.adjust(quantity)));
     }
