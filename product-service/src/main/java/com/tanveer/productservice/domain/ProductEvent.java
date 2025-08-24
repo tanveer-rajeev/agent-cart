@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record ProductEvent(UUID productId, String sku, String eventType,
                            Instant occurredAt) implements DomainEvent {
+
   private static final String AGGREGATE_TYPE = "Product";
 
   @Override

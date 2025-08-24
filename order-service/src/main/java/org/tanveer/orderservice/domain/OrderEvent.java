@@ -8,7 +8,7 @@ import java.util.UUID;
 public record OrderEvent(UUID aggregateId, UUID customerId, UUID productId, EventType eventType,Instant occurredAt)
         implements DomainEvent {
 
-    private final String AGGREGATE_TYPE = "ORDER";
+    private static final String AGGREGATE_TYPE = "ORDER";
 
     @Override
     public String getEventType() {
