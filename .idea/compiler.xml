@@ -12,6 +12,7 @@
         <module name="api-gateway" />
         <module name="product-service" />
         <module name="common-lib" />
+        <module name="order-service" />
         <module name="service-registry" />
       </profile>
     </annotationProcessing>
@@ -23,6 +24,7 @@
       <module name="cloud-config-server" options="-parameters" />
       <module name="common-lib" options="" />
       <module name="inventory-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
     </option>

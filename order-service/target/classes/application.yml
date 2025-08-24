@@ -1,14 +1,15 @@
+
 server:
-  port: 9093
+  port: 9094
 
 spring:
   application:
-    name: inventory-service
+    name: order-service
   config:
     import: "optional:configserver:http://localhost:8888"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/inventory-service
+    url: jdbc:mysql://localhost:3306/order-service
     username: root
     password: root
   jpa:
@@ -30,11 +31,14 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
+topic:
+  map:
+    PRODUCT_CREATED: product-created
+    PRODUCT_UPDATED: product-updated
 
 logging:
   level:
     root: INFO
-    com.tanveer.inventory-service: DEBUG
+    com.tanveer.product-service: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
