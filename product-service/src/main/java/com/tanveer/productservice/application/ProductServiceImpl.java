@@ -3,7 +3,6 @@ package com.tanveer.productservice.application;
 import com.tanveer.commonlib.domain.EventRepository;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.domain.ProductEvent;
-import com.tanveer.productservice.domain.ProductService;
 import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
 import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
@@ -42,7 +41,7 @@ public class ProductServiceImpl{
 
     log.info("Adding event for {}", productRequestDto.sku());
 
-    domain.pullDomainEvents().forEach(eventRepository::saveEvent);
+    domain.pullProductEvents().forEach(eventRepository::saveEvent);
 
     log.info("Saving event entity for {}", productRequestDto.sku());
 
