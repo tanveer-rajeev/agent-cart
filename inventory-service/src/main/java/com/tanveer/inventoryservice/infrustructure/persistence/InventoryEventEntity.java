@@ -18,17 +18,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "inventory_events", indexes = {
-        @Index(name = "idx_inventory_events_sku_published", columnList = "sku, published")
+        @Index(name = "idx_inventory_events_published", columnList = "sku, published")
 })
 public class InventoryEventEntity extends EventEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String sku;
 
     @Column(name = "event_type")
     private String eventType;
 
-    @Column(name = "correlationId",unique = true, nullable = false)
+    @Column(name = "correlationId",nullable = false)
     private UUID correlationId;
 
     protected InventoryEventEntity() {

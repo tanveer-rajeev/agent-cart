@@ -4,19 +4,19 @@ import com.tanveer.commonlib.domain.EventRepository;
 import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryEvent;
 import com.tanveer.inventoryservice.domain.InventoryRepository;
-import com.tanveer.inventoryservice.domain.InventoryService;
-import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
-import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
+import com.tanveer.inventoryservice.infrustructure.dto.*;
 import com.tanveer.inventoryservice.infrustructure.mapper.InventoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Slf4j
-public class InventoryServiceImpl{
+public class InventoryServiceImpl {
 
     private final InventoryRepository inventoryRepository;
     private final EventRepository<InventoryEvent> eventRepository;
@@ -26,7 +26,7 @@ public class InventoryServiceImpl{
     }
 
     public InventoryResponseDto createInventory(InventoryRequestDto request) {
-        log.info("Creating inventory {}",request.correlationId());
+        log.info("Creating inventory {}", request.correlationId());
         Inventory inventory = inventoryRepository.save(Inventory.create(
                 UUID.randomUUID(),
                 request.correlationId(),
@@ -34,7 +34,7 @@ public class InventoryServiceImpl{
                 request.availableQty(),
                 request.reserveQty()
         ));
-        publishEvents(inventory);
+        saveEvents(inventory);
         return InventoryMapper.toResponseDto(inventory);
     }
 
@@ -58,21 +58,27 @@ public class InventoryServiceImpl{
 
         log.info("Inventory is saving {}", inventory);
 
-        inventoryRepository.save(updatedInventory);
+        inventoryRepository.update(updatedInventory);
 
         log.info("Inventory outbox event saving {}", inventory);
 
-        publishEvents(updatedInventory);
+        saveEvents(updatedInventory);
 
         return updatedInventory;
     }
 
-    public Inventory updateInventory(Inventory inventory) {
-        log.info("updateInventory in action {}", inventory);
-        return inventory;
+    private void saveEvents(Inventory inventory) {
+        inventory.pullDomainEvents().forEach(eventRepository::saveEvent);
     }
 
-    private void publishEvents(Inventory inventory) {
-        inventory.pullDomainEvents().forEach(eventRepository::saveEvent);
+    public AvailableProductResponseDto checkProductsAvailability(ProductRequestDto productRequestDto) {
+        List<AvailableProductList> list = new ArrayList<>();
+
+        for (OrderItem item : productRequestDto.orderItemList()) {
+            Inventory inventory = inventoryRepository.findBySku(item.sku());
+            boolean isAvailable = inventory.getAvailableQty() >= item.quantity();
+            list.add(new AvailableProductList(item.sku(), item.quantity(), inventory.getAvailableQty(), isAvailable));
+        }
+        return new AvailableProductResponseDto(list);
     }
 }

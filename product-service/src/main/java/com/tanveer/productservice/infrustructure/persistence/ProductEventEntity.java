@@ -15,13 +15,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "product_events", indexes = {
-  @Index(name = "idx_product_events_sku_published", columnList = "sku, published")
+  @Index(name = "idx_product_events_published", columnList = "published")
 })
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductEventEntity extends EventEntity {
 
-  @Column(unique = true,nullable = false)
+  @Column(nullable = false)
   private String sku;
 }

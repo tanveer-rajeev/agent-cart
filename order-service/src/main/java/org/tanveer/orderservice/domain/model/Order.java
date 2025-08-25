@@ -1,13 +1,9 @@
 package org.tanveer.orderservice.domain.model;
 
 import lombok.Getter;
-import org.tanveer.orderservice.domain.EventType;
-import org.tanveer.orderservice.domain.OrderEvent;
-import org.tanveer.orderservice.domain.OrderStatus;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 public final class Order {
@@ -38,5 +34,9 @@ public final class Order {
 
     public long calculateTotalAmount() {
         return items.stream().mapToLong(OrderItem::totalPrice).sum();
+    }
+
+    public List<OrderEvent> pullOrderEvents() {
+        return events;
     }
 }

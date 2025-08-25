@@ -1,11 +1,11 @@
-package org.tanveer.orderservice.domain;
+package org.tanveer.orderservice.domain.model;
 
 import com.tanveer.commonlib.domain.DomainEvent;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record OrderEvent(UUID aggregateId, UUID customerId, UUID productId, EventType eventType,Instant occurredAt)
+public record OrderEvent(UUID aggregateId, UUID customerId, UUID productId, EventType eventType, Instant occurredAt)
         implements DomainEvent {
 
     private static final String AGGREGATE_TYPE = "ORDER";

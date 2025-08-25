@@ -1,4 +1,4 @@
-package org.tanveer.orderservice.domain;
+package org.tanveer.orderservice.domain.model;
 
 public enum EventType {
     ORDER_PLACED("order-placed"),

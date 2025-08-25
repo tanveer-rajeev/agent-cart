@@ -34,8 +34,10 @@ public class InventoryEventProcessor implements EventService {
           pendingEvent.getAggregateId().toString(),
           pendingEvent.getPayload()
         );
+
         pendingEvent.markPublished();
         repository.saveAndFlush(pendingEvent);
+
         log.info("Sent {} event for SKU {} of aggregate {}", pendingEvent.getEventType(), pendingEvent.getSku(),
           pendingEvent.getAggregateType());
       } catch (Exception e) {

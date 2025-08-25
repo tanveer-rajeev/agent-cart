@@ -1,6 +1,6 @@
 package org.tanveer.orderservice.infrustructure.dto;
 
-import org.tanveer.orderservice.domain.OrderStatus;
+import org.tanveer.orderservice.domain.model.OrderStatus;
 
 import java.util.UUID;
 

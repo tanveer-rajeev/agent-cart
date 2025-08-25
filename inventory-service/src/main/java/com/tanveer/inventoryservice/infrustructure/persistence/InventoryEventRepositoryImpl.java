@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EventRepositoryImpl implements EventRepository<InventoryEvent> {
+public class InventoryEventRepositoryImpl implements EventRepository<InventoryEvent> {
 
     private final EventJpaRepository repository;
 

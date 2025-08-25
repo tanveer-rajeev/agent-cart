@@ -15,15 +15,15 @@ public final class Product {
     private final String description;
     private final String sku;
     private final Long price;
-    private final List<ProductEvent> event;
+    private final List<ProductEvent> events;
 
-    private Product(UUID id, String name, String description, String sku, Long price, List<ProductEvent> event) {
+    private Product(UUID id, String name, String description, String sku, Long price, List<ProductEvent> events) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.sku = sku;
         this.price = price;
-        this.event = List.copyOf(event);
+        this.events = List.copyOf(events);
     }
 
     public static Product create(UUID id, String name, String description, String sku, Long price) {
@@ -34,6 +34,6 @@ public final class Product {
     }
 
     public List<ProductEvent> pullProductEvents() {
-        return event;
+        return events;
     }
 }

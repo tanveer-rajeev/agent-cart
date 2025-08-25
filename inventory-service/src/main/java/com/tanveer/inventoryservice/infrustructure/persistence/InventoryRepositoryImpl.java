@@ -24,4 +24,14 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     public Inventory save(Inventory inventory) {
         return InventoryMapper.toDomain(repository.save(InventoryMapper.toEntity(inventory)));
     }
+
+    @Override
+    public Inventory update(Inventory inventory) {
+        return InventoryMapper.toDomain(repository.saveAndFlush(InventoryMapper.toEntity(inventory)));
+    }
+
+    @Override
+    public boolean isProductAvailable(String sku, int quantity) {
+        return findBySku(sku).getAvailableQty() > quantity;
+    }
 }

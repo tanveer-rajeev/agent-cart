@@ -9,7 +9,7 @@ public final class OrderItem {
     private final UUID productId;
     private final String name;
     private final String sku;
-    private final long price;  // cents
+    private final long price;
     private final int quantity;
 
     public OrderItem(UUID productId, String name, String sku, long price, int quantity) {

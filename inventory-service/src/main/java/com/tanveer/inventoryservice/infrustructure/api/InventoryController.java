@@ -1,18 +1,14 @@
 package com.tanveer.inventoryservice.infrustructure.api;
 
-import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ProductRequestDto;
+import com.tanveer.inventoryservice.infrustructure.dto.AvailableProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,6 +20,11 @@ public class InventoryController {
     @GetMapping("/{sku}")
     public InventoryResponseDto getBySku(@PathVariable String sku) {
         return inventoryService.getInventoryBySku(sku);
+    }
+
+    @GetMapping("/availability")
+    public AvailableProductResponseDto checkProductsAvailability(@RequestBody ProductRequestDto productRequestDto) {
+        return inventoryService.checkProductsAvailability(productRequestDto);
     }
 
     @PostMapping

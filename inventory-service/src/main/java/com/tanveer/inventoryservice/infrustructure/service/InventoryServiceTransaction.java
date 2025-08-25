@@ -5,9 +5,12 @@ import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ProductRequestDto;
+import com.tanveer.inventoryservice.infrustructure.dto.AvailableProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -19,6 +22,11 @@ public class InventoryServiceTransaction implements InventoryService {
     @Override
     public InventoryResponseDto getInventoryBySku(String sku) {
         return inventoryServiceImpl.getInventoryBySku(sku);
+    }
+
+    @Override
+    public AvailableProductResponseDto checkProductsAvailability(ProductRequestDto productRequestDto) {
+        return inventoryServiceImpl.checkProductsAvailability(productRequestDto);
     }
 
     @Override
@@ -37,6 +45,7 @@ public class InventoryServiceTransaction implements InventoryService {
     }
 
     @Override
+    @Transactional
     public InventoryResponseDto adjustStock(String sku, int quantity) {
         return inventoryServiceImpl.adjustStock(sku,quantity);
     }

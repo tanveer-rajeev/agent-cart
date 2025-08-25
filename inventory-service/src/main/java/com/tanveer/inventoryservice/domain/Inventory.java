@@ -17,7 +17,8 @@ public final class Inventory {
     private final int reservedQty;
     private final List<InventoryEvent> domainEvents;
 
-    private Inventory(UUID id, UUID correlationId, String sku, int availableQty, int reservedQty, List<InventoryEvent> domainEvents) {
+    private Inventory(UUID id, UUID correlationId, String sku, int availableQty, int reservedQty,
+                      List<InventoryEvent> domainEvents) {
         this.id = id;
         this.correlationId = correlationId;
         this.sku = sku;
@@ -27,10 +28,9 @@ public final class Inventory {
     }
 
     public static Inventory create(UUID id, UUID correlationId, String sku, int availableQty, int reservedQty) {
-        InventoryEvent event = new InventoryEvent(id, correlationId, sku, availableQty, EventType.INVENTORY_CREATED, Instant.now());
-        return new Inventory(id, correlationId, sku, availableQty, reservedQty, new ArrayList<>() {{
-            add(event);
-        }});
+        InventoryEvent event = new InventoryEvent(id, correlationId, sku, availableQty, EventType.INVENTORY_CREATED,
+                Instant.now());
+        return new Inventory(id, correlationId, sku, availableQty, reservedQty, List.of(event));
     }
 
     public Inventory reserve(int quantity) {
@@ -38,30 +38,26 @@ public final class Inventory {
             throw new IllegalArgumentException("Insufficient stock");
         }
         quantity = availableQty - quantity;
-        InventoryEvent event = new InventoryEvent(id, correlationId, sku, quantity, EventType.INVENTORY_RESERVED, Instant.now());
-        return new Inventory(id, correlationId, sku, availableQty, quantity, append(event));
+        InventoryEvent event = new InventoryEvent(id, correlationId, sku, quantity, EventType.INVENTORY_RESERVED,
+                Instant.now());
+        return new Inventory(id, correlationId, sku, availableQty, quantity, List.of(event));
     }
 
     public Inventory release(int quantity) {
         int newReserved = Math.max(0, reservedQty - quantity);
-        InventoryEvent event = new InventoryEvent(id, correlationId, sku, newReserved, EventType.INVENTORY_RELEASED, Instant.now());
-        return new Inventory(id, correlationId, sku, availableQty, newReserved, append(event));
+        InventoryEvent event = new InventoryEvent(id, correlationId, sku, newReserved, EventType.INVENTORY_RELEASED,
+                Instant.now());
+        return new Inventory(id, correlationId, sku, availableQty, newReserved, List.of(event));
     }
 
     public Inventory adjust(int quantity) {
         int newAvailable = availableQty + quantity;
-        InventoryEvent event = new InventoryEvent(id, correlationId, sku, newAvailable, EventType.INVENTORY_ADJUST, Instant.now());
-        return new Inventory(id, correlationId, sku, newAvailable, reservedQty, append(event));
+        InventoryEvent event = new InventoryEvent(id, correlationId, sku, newAvailable, EventType.INVENTORY_ADJUST,
+                Instant.now());
+        return new Inventory(id, correlationId, sku, newAvailable, reservedQty, List.of(event));
     }
 
     public List<InventoryEvent> pullDomainEvents() {
         return domainEvents;
-    }
-
-    private List<InventoryEvent> append(InventoryEvent event) {
-        return new java.util.ArrayList<>() {{
-            addAll(domainEvents);
-            add(event);
-        }};
     }
 }
