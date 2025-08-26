@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-public class DomainOrderDto {
+public class OrderRequestDto {
     UUID customerId;
     List<OrderItemDto> items;
 

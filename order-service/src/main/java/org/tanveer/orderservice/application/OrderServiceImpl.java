@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.respository.OrderEventRepository;
 import org.tanveer.orderservice.domain.respository.OrderRepository;
-import org.tanveer.orderservice.domain.dto.DomainOrderDto;
+import org.tanveer.orderservice.domain.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.OrderItem;
 import org.tanveer.orderservice.infrustructure.client.InventoryClient;
 import org.tanveer.orderservice.infrustructure.dto.AvailableProductList;
@@ -13,6 +13,7 @@ import org.tanveer.orderservice.infrustructure.dto.AvailableProductResponseDto;
 import org.tanveer.orderservice.infrustructure.dto.OrderResponseDto;
 import org.tanveer.orderservice.infrustructure.dto.ProductRequestDto;
 import org.tanveer.orderservice.infrustructure.exception.OrderException;
+import org.tanveer.orderservice.infrustructure.mapper.OrderMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +27,15 @@ public class OrderServiceImpl {
     private final OrderRepository orderRepository;
     private final OrderEventRepository orderEventRepository;
 
-    public OrderResponseDto create(DomainOrderDto domainOrderDto) {
-        log.info("Creating order for the customer{} ", domainOrderDto.getCustomerId());
+    public OrderResponseDto create(OrderRequestDto orderRequestDto) {
+        log.info("Creating order for the customer{} ", orderRequestDto.getCustomerId());
 
-        List<OrderItem> orderItems = domainOrderDto.getItems()
+        List<OrderItem> orderItems = orderRequestDto.getItems()
                 .stream().map(item -> new OrderItem(item.getProductId(),
                         item.getName(), item.getSku(), item.getPrice(), item.getQuantity()))
                 .toList();
 
-        Order order = Order.create(UUID.randomUUID(), domainOrderDto.getCustomerId(), orderItems);
+        Order order = Order.create(UUID.randomUUID(), orderRequestDto.getCustomerId(), orderItems);
 
         AvailableProductResponseDto availableProductResponseDto =
                 inventoryClient.checkProductsAvailability(new ProductRequestDto(orderItems));
@@ -47,18 +48,14 @@ public class OrderServiceImpl {
             throw new OrderException("Some products not available",unavailableProductList.get());
         }
 
-        log.info("Saving order of customer {}", domainOrderDto.getCustomerId());
+        log.info("Saving order of customer {}", orderRequestDto.getCustomerId());
 
-        orderRepository.save(order);
+        Order saved = orderRepository.save(order);
 
-        log.info("Saving all events of the order of customer {}", domainOrderDto.getCustomerId());
+        log.info("Saving all events of the order of customer {}", orderRequestDto.getCustomerId());
 
         order.pullOrderEvents().forEach(orderEventRepository::saveEvent);
 
-        return new OrderResponseDto(
-                order.getOrderId(),
-                order.getStatus(),
-                order.calculateTotalAmount()
-        );
+        return OrderMapper.toResponseDto(saved);
     }
 }

@@ -1,4 +1,4 @@
-package org.tanveer.orderservice.infrustructure.publisher;
+package org.tanveer.orderservice.infrustructure.messaging;
 
 import com.tanveer.commonlib.domain.EventService;
 import lombok.RequiredArgsConstructor;

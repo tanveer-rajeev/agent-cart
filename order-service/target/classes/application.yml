@@ -1,4 +1,7 @@
-
+application:
+  services:
+    inventory:
+      url: http://localhost:9093/api/v1/inventories
 server:
   port: 9094
 

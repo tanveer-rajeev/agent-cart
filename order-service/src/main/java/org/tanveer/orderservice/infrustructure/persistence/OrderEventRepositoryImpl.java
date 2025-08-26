@@ -14,6 +14,6 @@ public class OrderEventRepositoryImpl implements OrderEventRepository {
 
     @Override
     public void saveEvent(OrderEvent event) {
-        orderEventJpaRepository.save(OrderMapper.toEntity(event));
+        orderEventJpaRepository.save(OrderMapper.toEventEntity(event));
     }
 }

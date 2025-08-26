@@ -6,7 +6,7 @@ import com.tanveer.productservice.domain.ProductEvent;
 import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
 import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
-import com.tanveer.productservice.infrustructure.persistence.ProductRepository;
+import com.tanveer.productservice.infrustructure.persistence.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
 @Slf4j
 public class ProductServiceImpl{
 
-  private final ProductRepository repository;
+  private final ProductJpaRepository repository;
   private final EventRepository<ProductEvent> eventRepository;
 
 
