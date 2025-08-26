@@ -33,6 +33,7 @@ public class OrderMapper {
 
         try {
             return OrderEventEntity.builder()
+                    .aggregateType(event.getAggregateType())
                     .aggregateId(event.getAggregateId())
                     .customerId(event.customerId())
                     .productId(event.productId())
