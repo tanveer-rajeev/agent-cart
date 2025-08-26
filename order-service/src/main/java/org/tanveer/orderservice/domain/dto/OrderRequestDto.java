@@ -8,13 +8,13 @@ import java.util.UUID;
 
 @Value
 public class OrderRequestDto {
-    UUID customerId;
+    String customerId;
     List<OrderItemDto> items;
 
 
     @Data
     public static class OrderItemDto {
-        private UUID productId;
+        private String productId;
         private String name;
         private String sku;
         private long price;

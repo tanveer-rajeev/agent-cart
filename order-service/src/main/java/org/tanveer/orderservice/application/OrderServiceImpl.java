@@ -35,10 +35,16 @@ public class OrderServiceImpl {
                         item.getName(), item.getSku(), item.getPrice(), item.getQuantity()))
                 .toList();
 
-        Order order = Order.create(UUID.randomUUID(), orderRequestDto.getCustomerId(), orderItems);
+        Order order = Order.create(UUID.randomUUID().toString(), orderRequestDto.getCustomerId(), orderItems);
+
+        log.info("Making api call to inventory service to check product availability {}",
+                orderRequestDto.getCustomerId());
 
         AvailableProductResponseDto availableProductResponseDto =
                 inventoryClient.checkProductsAvailability(new ProductRequestDto(orderItems));
+
+        log.info("Get available product list {}", availableProductResponseDto);
+
 
         Optional<AvailableProductList> unavailableProductList = availableProductResponseDto.availableProductLists()
                 .stream().filter(product -> !product.isAvailable())

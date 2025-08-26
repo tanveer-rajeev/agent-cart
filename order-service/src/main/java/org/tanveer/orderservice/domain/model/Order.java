@@ -7,13 +7,13 @@ import java.util.*;
 
 @Getter
 public final class Order {
-    private final UUID orderId;
-    private final UUID customerId;
+    private final String orderId;
+    private final String customerId;
     private final OrderStatus status;
     private final List<OrderEvent> events;
     private final List<OrderItem> items;
 
-    public Order(UUID orderId, UUID customerId, OrderStatus status, List<OrderEvent> events,
+    public Order(String orderId, String customerId, OrderStatus status, List<OrderEvent> events,
                  List<OrderItem> items) {
         this.orderId = orderId;
         this.customerId = customerId;
@@ -22,7 +22,7 @@ public final class Order {
         this.items = items;
     }
 
-    public static Order create(UUID orderId, UUID customerId, List<OrderItem> items) {
+    public static Order create(String orderId, String customerId, List<OrderItem> items) {
 
         List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
                         item.getProductId(), EventType.ORDER_PLACED, Instant.now()))

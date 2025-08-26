@@ -15,8 +15,7 @@ import java.util.UUID;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private String id = UUID.randomUUID().toString();
 
     @Column(unique = true, nullable = false)
     private String email;

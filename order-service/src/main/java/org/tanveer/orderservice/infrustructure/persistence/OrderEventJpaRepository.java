@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface OrderEventJpaRepository extends JpaRepository<OrderEventEntity, UUID> {
-    Optional<OrderEventEntity> findByCustomerId(UUID customerId);
-    Optional<OrderEventEntity> findByProductId(UUID productId);
+    Optional<OrderEventEntity> findByCustomerId(String customerId);
+    Optional<OrderEventEntity> findByProductId(String productId);
     List<OrderEventEntity> findByPublishedFalse();
 }

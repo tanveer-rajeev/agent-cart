@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface AuthService {
   UserResponseDTO getUserByEmail(String email) throws CustomException;
-  UserResponseDTO getUserById(UUID id) throws CustomException;
+  UserResponseDTO getUserById(String id) throws CustomException;
   UserResponseDTO saveUser(UserEntity userEntity) throws CustomException;
   AuthResponse authenticate(LoginRequestDTO loginRequestDTO) throws CustomException;
   void validateToken(String token) throws CustomException;

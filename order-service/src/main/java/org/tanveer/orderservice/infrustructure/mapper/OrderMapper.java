@@ -47,7 +47,7 @@ public class OrderMapper {
     }
 
     public static OrderEntity toEntity(Order order) {
-        return OrderEntity.builder().orderId(UUID.randomUUID())
+        return OrderEntity.builder().orderId(order.getOrderId())
                 .customerId(order.getCustomerId())
                 .items(toOrderItemEntityList(order.getItems()))
                 .status(order.getStatus()).build();

@@ -39,7 +39,7 @@ public class AuthController {
 
   @Operation(summary = "Get user by id")
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) throws CustomException {
+  public ResponseEntity<UserResponseDTO> getUserById(@PathVariable String id) throws CustomException {
     return ResponseEntity.ok().body(authService.getUserById(id));
   }
 

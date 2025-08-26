@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
     return new UserResponseDTO(user.getId(), user.getEmail(), user.getRole());
   }
 
-  public UserResponseDTO getUserById(UUID id) throws CustomException {
+  public UserResponseDTO getUserById(String id) throws CustomException {
 
     log.info("Fetching user by {} id", id);
 

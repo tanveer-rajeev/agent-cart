@@ -21,10 +21,10 @@ import java.util.UUID;
 public class OrderEntity {
 
     @Id
-    private UUID orderId;
+    private String orderId;
 
     @Column(name = "customer_id", unique = true, nullable = false)
-    private UUID customerId;
+    private String customerId;
 
     @Column(name = "status", nullable = false)
     private OrderStatus status;

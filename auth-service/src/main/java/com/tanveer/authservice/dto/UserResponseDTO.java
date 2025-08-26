@@ -5,7 +5,7 @@ import com.tanveer.authservice.domain.UserEntity;
 import java.util.UUID;
 
 public record UserResponseDTO(
-  UUID id,
+  String id,
   String email,
   String role
 ) {

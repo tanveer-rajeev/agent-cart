@@ -21,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderItemEntity {
     @Id
-    private  UUID productId;
+    private  String productId = UUID.randomUUID().toString();
     private  String name;
     private  String sku;
     private  long price;
