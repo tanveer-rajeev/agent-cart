@@ -5,7 +5,7 @@ import com.tanveer.commonlib.domain.DomainEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record InventoryEvent(UUID aggregateId, UUID correlationId, String sku, int quantity, EventType eventType,
+public record InventoryEvent(String aggregateId, String productId, String sku, int quantity, EventType eventType,
                              Instant occurredAt) implements DomainEvent {
 
     private static final String AGGREGATE_TYPE = "Inventory";
@@ -21,7 +21,7 @@ public record InventoryEvent(UUID aggregateId, UUID correlationId, String sku, i
     }
 
     @Override
-    public UUID getAggregateId() {
+    public String getAggregateId() {
         return aggregateId;
     }
 
@@ -38,8 +38,8 @@ public record InventoryEvent(UUID aggregateId, UUID correlationId, String sku, i
         return quantity;
     }
 
-    public UUID getCorrelationId() {
-        return correlationId;
+    public String getProductId() {
+        return productId;
     }
 
 }

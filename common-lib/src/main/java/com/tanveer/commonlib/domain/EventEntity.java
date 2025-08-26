@@ -38,7 +38,7 @@ public abstract class EventEntity {
   private String eventType;
 
   @Column(name = "aggregate_id")
-  private UUID aggregateId;
+  private String aggregateId;
 
   @Column(name = "occurred_at")
   @JsonFormat(shape = JsonFormat.Shape.STRING)

@@ -6,6 +6,6 @@ import java.util.UUID;
 public interface DomainEvent {
   String getEventType();
   Instant getOccurredAt();
-  UUID getAggregateId();
+  String getAggregateId();
   String getAggregateType();
 }

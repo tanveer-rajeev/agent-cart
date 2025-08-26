@@ -19,7 +19,6 @@ public class ProductServiceImpl{
   private final ProductJpaRepository repository;
   private final EventRepository<ProductEvent> eventRepository;
 
-
   public ProductResponseDto addProduct(ProductRequestDto productRequestDto) {
 
     log.info("Creating product {}", productRequestDto.sku());
@@ -28,7 +27,7 @@ public class ProductServiceImpl{
       throw new IllegalArgumentException("SKU already exists");
     }
       Product domain = Product.create(
-              UUID.randomUUID(),
+              UUID.randomUUID().toString(),
               productRequestDto.name(),
               productRequestDto.description(),
               productRequestDto.sku(),

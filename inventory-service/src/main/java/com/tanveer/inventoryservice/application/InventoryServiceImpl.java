@@ -26,10 +26,10 @@ public class InventoryServiceImpl {
     }
 
     public InventoryResponseDto createInventory(InventoryRequestDto request) {
-        log.info("Creating inventory {}", request.correlationId());
+        log.info("Creating inventory {}", request.productId());
         Inventory inventory = inventoryRepository.save(Inventory.create(
-                UUID.randomUUID(),
-                request.correlationId(),
+                UUID.randomUUID().toString(),
+                request.productId(),
                 request.sku(),
                 request.availableQty(),
                 request.reserveQty()

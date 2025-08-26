@@ -19,8 +19,7 @@ public class InventoryEventMapper {
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("aggregateType", event.getAggregateType());
         payloadMap.put("aggregateId", event.getAggregateId());
-        payloadMap.put("correlationId", event.getCorrelationId());
-        payloadMap.put("productId", event.getAggregateId());
+        payloadMap.put("productId", event.getProductId());
         payloadMap.put("eventType", event.getEventType());
         payloadMap.put("sku", event.getSku());
         payloadMap.put("occurredAt", event.getOccurredAt() != null ? event.getOccurredAt().toString() : null);
@@ -28,7 +27,7 @@ public class InventoryEventMapper {
         try {
             return InventoryEventEntity.builder()
                     .aggregateType(event.getAggregateType())
-                    .correlationId(event.getCorrelationId())
+                    .productId(event.getProductId())
                     .aggregateId(event.getAggregateId())
                     .eventType(event.getEventType())
                     .payload(objectMapper.writeValueAsString(payloadMap))

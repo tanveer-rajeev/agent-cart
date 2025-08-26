@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "orders", indexes = {
-        @Index(name = "idx_orders_customerId", columnList = "customerId")
+        @Index(name = "idx_orders_customer_id", columnList = "customer_id")
 })
 @Data
 @AllArgsConstructor
@@ -22,8 +22,14 @@ public class OrderEntity {
 
     @Id
     private UUID orderId;
+
+    @Column(name = "customer_id", unique = true, nullable = false)
     private UUID customerId;
+
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
+
+    @Column(name = "order_items",nullable = false)
     @OneToMany(targetEntity = OrderItemEntity.class, cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderItemEntity> items;

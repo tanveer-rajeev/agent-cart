@@ -5,7 +5,7 @@ import com.tanveer.commonlib.domain.DomainEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record OrderEvent(UUID aggregateId, UUID customerId, UUID productId, EventType eventType, Instant occurredAt)
+public record OrderEvent(String aggregateId, String customerId, String productId, EventType eventType, Instant occurredAt)
         implements DomainEvent {
 
     private static final String AGGREGATE_TYPE = "ORDER";
@@ -21,7 +21,7 @@ public record OrderEvent(UUID aggregateId, UUID customerId, UUID productId, Even
     }
 
     @Override
-    public UUID getAggregateId() {
+    public String getAggregateId() {
         return aggregateId;
     }
 

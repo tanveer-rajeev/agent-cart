@@ -28,11 +28,10 @@ import java.util.UUID;
 public class InventoryEntity {
 
     @Id
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
-    private UUID correlationId;
+    @Column(name = "product_id", unique = true, nullable = false)
+    private String productId;
 
     @Column(unique = true, nullable = false)
     private String sku;

@@ -22,7 +22,7 @@ public class InventoryController {
         return inventoryService.getInventoryBySku(sku);
     }
 
-    @GetMapping("/availability")
+    @PostMapping("/availability")
     public AvailableProductResponseDto checkProductsAvailability(@RequestBody ProductRequestDto productRequestDto) {
         return inventoryService.checkProductsAvailability(productRequestDto);
     }

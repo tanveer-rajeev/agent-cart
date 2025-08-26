@@ -11,22 +11,20 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
-
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @Entity
 @Table(name = "order_events", indexes = {
-        @Index(name = "idx_product_events_customerId_productId", columnList = "customerId, productId")
+        @Index(name = "idx_order_events_published", columnList = "published")
 })
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderEventEntity extends EventEntity {
 
-    @Column(name = "customer_id", unique = true, nullable = false)
-    private UUID customerId;
+    @Column(name = "customer_id",nullable = false)
+    private String customerId;
 
-    @Column(name = "product_id", unique = true, nullable = false)
-    private UUID productId;
+    @Column(name = "product_id",nullable = false)
+    private String productId;
 }

@@ -12,14 +12,14 @@ public class InventoryMapper {
                 .sku(domain.getSku())
                 .availableQty(domain.getAvailableQty())
                 .reservedQty(domain.getReservedQty())
-                .correlationId(domain.getCorrelationId())
+                .productId(domain.getProductId())
                 .build();
     }
 
     public static Inventory toDomain(InventoryEntity entity) {
         return Inventory.create(
                 entity.getId(),
-                entity.getCorrelationId(),
+                entity.getProductId(),
                 entity.getSku(),
                 entity.getAvailableQty(),
                 entity.getReservedQty()

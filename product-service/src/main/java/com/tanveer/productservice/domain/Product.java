@@ -10,14 +10,14 @@ import java.util.UUID;
 @Getter
 public final class Product {
 
-    private final UUID id;
+    private final String id;
     private final String name;
     private final String description;
     private final String sku;
     private final Long price;
     private final List<ProductEvent> events;
 
-    private Product(UUID id, String name, String description, String sku, Long price, List<ProductEvent> events) {
+    private Product(String id, String name, String description, String sku, Long price, List<ProductEvent> events) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -26,7 +26,7 @@ public final class Product {
         this.events = List.copyOf(events);
     }
 
-    public static Product create(UUID id, String name, String description, String sku, Long price) {
+    public static Product create(String id, String name, String description, String sku, Long price) {
         List<ProductEvent> events = new ArrayList<>();
         events.add(new ProductEvent(id, sku, EventType.PRODUCT_CREATED.value(), Instant.now()
         ));

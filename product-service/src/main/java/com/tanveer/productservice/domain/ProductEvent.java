@@ -5,7 +5,7 @@ import com.tanveer.commonlib.domain.DomainEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record ProductEvent(UUID productId, String sku, String eventType,
+public record ProductEvent(String productId, String sku, String eventType,
                            Instant occurredAt) implements DomainEvent {
 
   private static final String AGGREGATE_TYPE = "Product";
@@ -21,7 +21,7 @@ public record ProductEvent(UUID productId, String sku, String eventType,
   }
 
   @Override
-  public UUID getAggregateId() {
+  public String getAggregateId() {
     return productId;
   }
 
