@@ -1,17 +1,17 @@
 package org.tanveer.orderservice.infrustructure.exception;
 
-import org.tanveer.orderservice.infrustructure.dto.AvailableProductList;
+import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityDto;
 
 public class OrderException extends RuntimeException {
 
-    private final AvailableProductList availableProductResponseDto;
+    private final ItemAvailabilityDto availableProductResponseDto;
 
-    public OrderException (String message, AvailableProductList availableProductResponseDto1){
+    public OrderException (String message, ItemAvailabilityDto availableProductResponseDto1){
         super(message);
         this.availableProductResponseDto = availableProductResponseDto1;
     }
 
-    public AvailableProductList getOrderResponse() {
+    public ItemAvailabilityDto getOrderResponse() {
         return availableProductResponseDto;
     }
 }

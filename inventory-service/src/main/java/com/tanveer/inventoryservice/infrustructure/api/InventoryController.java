@@ -3,8 +3,8 @@ package com.tanveer.inventoryservice.infrustructure.api;
 import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
-import com.tanveer.inventoryservice.infrustructure.dto.ProductRequestDto;
-import com.tanveer.inventoryservice.infrustructure.dto.AvailableProductResponseDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityRequestDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,8 @@ public class InventoryController {
     }
 
     @PostMapping("/availability")
-    public AvailableProductResponseDto checkProductsAvailability(@RequestBody ProductRequestDto productRequestDto) {
-        return inventoryService.checkProductsAvailability(productRequestDto);
+    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+        return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 
     @PostMapping

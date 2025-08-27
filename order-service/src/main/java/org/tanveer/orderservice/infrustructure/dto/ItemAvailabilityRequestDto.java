@@ -4,6 +4,6 @@ import org.tanveer.orderservice.domain.model.OrderItem;
 
 import java.util.List;
 
-public record ProductRequestDto(List<OrderItem> orderItemList) {
+public record ItemAvailabilityRequestDto(List<OrderItem> orderItemList) {
 }
 

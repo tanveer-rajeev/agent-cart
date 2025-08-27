@@ -71,14 +71,14 @@ public class InventoryServiceImpl {
         inventory.pullDomainEvents().forEach(eventRepository::saveEvent);
     }
 
-    public AvailableProductResponseDto checkProductsAvailability(ProductRequestDto productRequestDto) {
-        List<AvailableProductList> list = new ArrayList<>();
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+        List<ItemAvailabilityDto> list = new ArrayList<>();
 
-        for (OrderItem item : productRequestDto.orderItemList()) {
+        for (OrderItem item : itemAvailabilityRequestDto.orderItemList()) {
             Inventory inventory = inventoryRepository.findBySku(item.sku());
             boolean isAvailable = inventory.getAvailableQty() >= item.quantity();
-            list.add(new AvailableProductList(item.sku(), item.quantity(), inventory.getAvailableQty(), isAvailable));
+            list.add(new ItemAvailabilityDto(item.sku(), item.quantity(), inventory.getAvailableQty(), isAvailable));
         }
-        return new AvailableProductResponseDto(list);
+        return new ItemAvailabilityResponseDto(list);
     }
 }

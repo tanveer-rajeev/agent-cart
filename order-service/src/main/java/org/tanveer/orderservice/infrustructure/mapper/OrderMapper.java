@@ -14,7 +14,6 @@ import org.tanveer.orderservice.infrustructure.persistence.OrderItemEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class OrderMapper {
 
@@ -68,7 +67,8 @@ public class OrderMapper {
     }
 
     public static OrderItemEntity toOrderItemEntity(OrderItem orderItem) {
-        return OrderItemEntity.builder().productId(orderItem.getProductId())
+        return OrderItemEntity.builder().id(orderItem.getId())
+                .productId(orderItem.getProductId())
                 .name(orderItem.getName())
                 .sku(orderItem.getSku())
                 .quantity(orderItem.getQuantity())
@@ -81,7 +81,7 @@ public class OrderMapper {
     }
 
     public static OrderItem toOrderItem(OrderItemEntity orderItemEntity) {
-        return new OrderItem(orderItemEntity.getProductId(), orderItemEntity.getName(), orderItemEntity.getSku(),
+        return new OrderItem(orderItemEntity.getId(), orderItemEntity.getProductId(), orderItemEntity.getName(), orderItemEntity.getSku(),
                 orderItemEntity.getPrice(), orderItemEntity.getQuantity());
     }
 }

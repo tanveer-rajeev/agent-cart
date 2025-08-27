@@ -5,8 +5,8 @@ import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryService;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
-import com.tanveer.inventoryservice.infrustructure.dto.ProductRequestDto;
-import com.tanveer.inventoryservice.infrustructure.dto.AvailableProductResponseDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityRequestDto;
+import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ public class InventoryServiceTransaction implements InventoryService {
     }
 
     @Override
-    public AvailableProductResponseDto checkProductsAvailability(ProductRequestDto productRequestDto) {
-        return inventoryServiceImpl.checkProductsAvailability(productRequestDto);
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+        return inventoryServiceImpl.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 
     @Override

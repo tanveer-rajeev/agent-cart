@@ -14,6 +14,7 @@ public class OrderRequestDto {
 
     @Data
     public static class OrderItemDto {
+        private String id;
         private String productId;
         private String name;
         private String sku;

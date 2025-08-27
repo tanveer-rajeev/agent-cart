@@ -8,10 +8,10 @@ import org.tanveer.orderservice.domain.respository.OrderRepository;
 import org.tanveer.orderservice.domain.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.OrderItem;
 import org.tanveer.orderservice.infrustructure.client.InventoryClient;
-import org.tanveer.orderservice.infrustructure.dto.AvailableProductList;
-import org.tanveer.orderservice.infrustructure.dto.AvailableProductResponseDto;
+import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityDto;
+import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityResponseDto;
 import org.tanveer.orderservice.infrustructure.dto.OrderResponseDto;
-import org.tanveer.orderservice.infrustructure.dto.ProductRequestDto;
+import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityRequestDto;
 import org.tanveer.orderservice.infrustructure.exception.OrderException;
 import org.tanveer.orderservice.infrustructure.mapper.OrderMapper;
 
@@ -31,7 +31,7 @@ public class OrderServiceImpl {
         log.info("Creating order for the customer{} ", orderRequestDto.getCustomerId());
 
         List<OrderItem> orderItems = orderRequestDto.getItems()
-                .stream().map(item -> new OrderItem(item.getProductId(),
+                .stream().map(item -> new OrderItem(item.getId(),item.getProductId(),
                         item.getName(), item.getSku(), item.getPrice(), item.getQuantity()))
                 .toList();
 
@@ -40,13 +40,12 @@ public class OrderServiceImpl {
         log.info("Making api call to inventory service to check product availability {}",
                 orderRequestDto.getCustomerId());
 
-        AvailableProductResponseDto availableProductResponseDto =
-                inventoryClient.checkProductsAvailability(new ProductRequestDto(orderItems));
+        ItemAvailabilityResponseDto itemAvailabilityResponseDto =
+                inventoryClient.checkProductsAvailability(new ItemAvailabilityRequestDto(orderItems));
 
-        log.info("Get available product list {}", availableProductResponseDto);
+        log.info("Get available product list {}", itemAvailabilityResponseDto);
 
-
-        Optional<AvailableProductList> unavailableProductList = availableProductResponseDto.availableProductLists()
+        Optional<ItemAvailabilityDto> unavailableProductList = itemAvailabilityResponseDto.itemAvailabilityDto()
                 .stream().filter(product -> !product.isAvailable())
                 .findAny();
 
