@@ -1,5 +1,6 @@
 package org.tanveer.orderservice.domain.model;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductEventRepositoryImpl implements EventRepository<ProductEvent> {
 
-    private final EventJpaRepository repository;
+    private final ProductEventJpaRepository repository;
 
     @Override
     public void saveEvent(ProductEvent event) {

@@ -1,6 +1,6 @@
 package com.tanveer.inventoryservice.infrustructure.api;
 
-import com.tanveer.inventoryservice.domain.InventoryService;
+import com.tanveer.inventoryservice.application.InventoryUseCase;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityRequestDto;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/inventories")
 public class InventoryController {
 
-    private final InventoryService inventoryService;
+    private final InventoryUseCase inventoryService;
 
     @GetMapping("/{sku}")
     public InventoryResponseDto getBySku(@PathVariable String sku) {

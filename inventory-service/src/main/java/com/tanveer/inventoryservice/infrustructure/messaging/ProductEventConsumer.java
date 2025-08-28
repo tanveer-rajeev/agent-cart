@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ProductCreatedConsumer implements EventConsumer {
+public class ProductEventConsumer implements EventConsumer {
 
     private final ObjectMapper objectMapper;
     private final ProductEventHandler handler;

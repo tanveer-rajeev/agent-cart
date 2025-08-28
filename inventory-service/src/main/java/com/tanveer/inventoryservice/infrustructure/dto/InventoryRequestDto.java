@@ -1,4 +1,4 @@
 package com.tanveer.inventoryservice.infrustructure.dto;
 
-public record InventoryRequestDto(String productId, String sku, int availableQty, int reserveQty) {
+public record InventoryRequestDto(String productId, String sku, int availableQty, int reserveQty,int version) {
 }

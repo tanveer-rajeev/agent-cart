@@ -3,6 +3,7 @@ package org.tanveer.orderservice.infrustructure.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.tanveer.orderservice.domain.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.model.OrderEvent;
 import org.tanveer.orderservice.domain.model.OrderItem;
@@ -53,13 +54,22 @@ public class OrderMapper {
                 .status(order.getStatus()).build();
     }
 
-    public static OrderResponseDto toResponseDto(Order order) {
+    public static Order dtoToDomain(OrderRequestDto requestDto) {
+        return Order.create(requestDto.getCustomerId(), requestDto.getItems()
+                .stream().map(OrderMapper::toOrderItemDto).toList());
+    }
+
+    public static OrderItem toOrderItemDto(OrderRequestDto.OrderItemDto orderItemDto) {
+        return new OrderItem(orderItemDto.getId(), orderItemDto.getProductId(), orderItemDto.getName(),
+                orderItemDto.getSku(), orderItemDto.getPrice(), orderItemDto.getQuantity());
+    }
+
+    public static OrderResponseDto domainToResponseDto(Order order) {
         return new OrderResponseDto(order.getOrderId(), order.getStatus(), order.calculateTotalAmount());
     }
 
     public static Order toDomain(OrderEntity orderEntity) {
-        return Order.create(orderEntity.getOrderId(), orderEntity.getCustomerId(),
-                toOrderItemList(orderEntity.getItems()));
+        return Order.create(orderEntity.getOrderId(), toOrderItemList(orderEntity.getItems()));
     }
 
     public static List<OrderItemEntity> toOrderItemEntityList(List<OrderItem> orderItems) {

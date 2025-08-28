@@ -3,7 +3,6 @@ package com.tanveer.inventoryservice.domain;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,21 +15,30 @@ public final class Inventory {
     private final int availableQty;
     private final int reservedQty;
     private final List<InventoryEvent> domainEvents;
+    private final int version;
 
     private Inventory(String id, String productId, String sku, int availableQty, int reservedQty,
-                      List<InventoryEvent> domainEvents) {
+                      List<InventoryEvent> domainEvents, int version) {
         this.id = id;
         this.productId = productId;
         this.sku = sku;
         this.availableQty = availableQty;
         this.reservedQty = reservedQty;
         this.domainEvents = List.copyOf(domainEvents);
+        this.version = version;
     }
 
-    public static Inventory create(String id, String productId, String sku, int availableQty, int reservedQty) {
+    public static Inventory create(String productId, String sku, int availableQty, int reservedQty,int version) {
+        String id = UUID.randomUUID().toString();
         InventoryEvent event = new InventoryEvent(id, productId, sku, availableQty, EventType.INVENTORY_CREATED,
                 Instant.now());
-        return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(event));
+        return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(event),version);
+    }
+
+    public static Inventory builder(String id, String productId, String sku, int availableQty, int reservedQty,int version) {
+        InventoryEvent event = new InventoryEvent(id, productId, sku, availableQty, EventType.INVENTORY_CREATED,
+                Instant.now());
+        return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(event), version);
     }
 
     public Inventory reserve(int quantity) {
@@ -40,21 +48,21 @@ public final class Inventory {
         quantity = availableQty - quantity;
         InventoryEvent event = new InventoryEvent(id, productId, sku, quantity, EventType.INVENTORY_RESERVED,
                 Instant.now());
-        return new Inventory(id, productId, sku, availableQty, quantity, List.of(event));
+        return new Inventory(id, productId, sku, availableQty, quantity, List.of(event), version);
     }
 
     public Inventory release(int quantity) {
         int newReserved = Math.max(0, reservedQty - quantity);
         InventoryEvent event = new InventoryEvent(id, productId, sku, newReserved, EventType.INVENTORY_RELEASED,
                 Instant.now());
-        return new Inventory(id, productId, sku, availableQty, newReserved, List.of(event));
+        return new Inventory(id, productId, sku, availableQty, newReserved, List.of(event), version);
     }
 
     public Inventory adjust(int quantity) {
         int newAvailable = availableQty + quantity;
         InventoryEvent event = new InventoryEvent(id, productId, sku, newAvailable, EventType.INVENTORY_ADJUST,
                 Instant.now());
-        return new Inventory(id, productId, sku, newAvailable, reservedQty, List.of(event));
+        return new Inventory(id, productId, sku, newAvailable, reservedQty, List.of(event), version);
     }
 
     public List<InventoryEvent> pullDomainEvents() {

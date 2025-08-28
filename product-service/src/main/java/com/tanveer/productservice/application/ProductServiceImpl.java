@@ -3,53 +3,48 @@ package com.tanveer.productservice.application;
 import com.tanveer.commonlib.domain.EventRepository;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.domain.ProductEvent;
-import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
-import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
+import com.tanveer.productservice.domain.ProductService;
 import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
 import com.tanveer.productservice.infrustructure.persistence.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor
 @Slf4j
-public class ProductServiceImpl{
+public class ProductServiceImpl implements ProductService {
 
-  private final ProductJpaRepository repository;
-  private final EventRepository<ProductEvent> eventRepository;
+    private final ProductJpaRepository repository;
+    private final EventRepository<ProductEvent> eventRepository;
 
-  public ProductResponseDto addProduct(ProductRequestDto productRequestDto) {
+    @Override
+    public Product addProduct(Product product) {
+        log.info("Creating product {}", product.getSku());
 
-    log.info("Creating product {}", productRequestDto.sku());
+        if (repository.findBySku(product.getSku()).isPresent()) {
+            throw new IllegalArgumentException("SKU already exists");
+        }
 
-    if (repository.findBySku(productRequestDto.sku()).isPresent()) {
-      throw new IllegalArgumentException("SKU already exists");
+        Product domain = Product.create(
+                product.getName(),
+                product.getDescription(),
+                product.getSku(),
+                product.getPrice()
+        );
+
+        log.info("Saving product {}", product.getSku());
+
+        repository.save(ProductMapper.domainToEntity(domain));
+
+        log.info("Adding event for {}", product.getSku());
+
+        domain.pullProductEvents().forEach(eventRepository::saveEvent);
+
+        return domain;
     }
-      Product domain = Product.create(
-              UUID.randomUUID().toString(),
-              productRequestDto.name(),
-              productRequestDto.description(),
-              productRequestDto.sku(),
-              productRequestDto.price()
-      );
 
-    log.info("Saving product {}", productRequestDto.sku());
-
-    repository.save(ProductMapper.toEntity(domain));
-
-    log.info("Adding event for {}", productRequestDto.sku());
-
-    domain.pullProductEvents().forEach(eventRepository::saveEvent);
-
-    log.info("Saving event entity for {}", productRequestDto.sku());
-
-    return ProductMapper.toResponseDto(domain);
-  }
-
-
-  public ProductResponseDto updateProduct(String sku) {
-    return null;
-  }
+    @Override
+    public Product updateProduct(Product product) {
+        return null;
+    }
 
 }

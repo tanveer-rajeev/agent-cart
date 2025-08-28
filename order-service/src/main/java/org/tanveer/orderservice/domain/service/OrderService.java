@@ -1,8 +1,7 @@
 package org.tanveer.orderservice.domain.service;
 
-import org.tanveer.orderservice.domain.dto.OrderRequestDto;
-import org.tanveer.orderservice.infrustructure.dto.OrderResponseDto;
+import org.tanveer.orderservice.domain.model.Order;
 
 public interface OrderService {
-    OrderResponseDto create(OrderRequestDto order);
+    Order create(Order order);
 }

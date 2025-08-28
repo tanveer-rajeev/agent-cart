@@ -3,7 +3,7 @@ package com.tanveer.productservice.infrustructure.messaging;
 import com.tanveer.commonlib.domain.EventService;
 import com.tanveer.productservice.infrustructure.persistence.ProductEventEntity;
 import com.tanveer.productservice.infrustructure.config.KafkaTopicConfiguration;
-import com.tanveer.productservice.infrustructure.persistence.EventJpaRepository;
+import com.tanveer.productservice.infrustructure.persistence.ProductEventJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class ProductEventProcessor implements EventService {
 
-  private final EventJpaRepository eventRepository;
+  private final ProductEventJpaRepository eventRepository;
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final KafkaTopicConfiguration kafkaTopicConfiguration;
 

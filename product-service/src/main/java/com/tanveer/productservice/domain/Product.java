@@ -26,8 +26,10 @@ public final class Product {
         this.events = List.copyOf(events);
     }
 
-    public static Product create(String id, String name, String description, String sku, Long price) {
+    public static Product create(String name, String description, String sku, Long price) {
+        String id = UUID.randomUUID().toString();
         List<ProductEvent> events = new ArrayList<>();
+
         events.add(new ProductEvent(id, sku, EventType.PRODUCT_CREATED.value(), Instant.now()
         ));
         return new Product(id, name, description, sku, price, events);

@@ -1,12 +1,13 @@
 package com.tanveer.productservice.infrustructure.mapper;
 
+import com.tanveer.productservice.application.dto.ProductRequestDto;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.infrustructure.persistence.ProductEntity;
-import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
+import com.tanveer.productservice.application.dto.ProductResponseDto;
 
 public class ProductMapper {
 
-    public static ProductEntity toEntity(Product domain) {
+    public static ProductEntity domainToEntity(Product domain) {
         return ProductEntity.builder()
                 .id(domain.getId())
                 .sku(domain.getSku())
@@ -16,9 +17,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public static Product toDomain(ProductEntity entity) {
+    public static Product entityToDomain(ProductEntity entity) {
         return Product.create(
-                entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
                 entity.getSku(),
@@ -26,7 +26,16 @@ public class ProductMapper {
         );
     }
 
-    public static ProductResponseDto toResponseDto(Product product) {
+    public static Product dtoToDomain(ProductRequestDto requestDto) {
+        return Product.create(
+                requestDto.name(),
+                requestDto.description(),
+                requestDto.sku(),
+                requestDto.price()
+        );
+    }
+
+    public static ProductResponseDto domainToDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
                 product.getSku(),

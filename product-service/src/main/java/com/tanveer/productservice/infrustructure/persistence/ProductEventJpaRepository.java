@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface EventJpaRepository extends JpaRepository<ProductEventEntity, UUID> {
+public interface ProductEventJpaRepository extends JpaRepository<ProductEventEntity, UUID> {
   List<ProductEventEntity> findByPublishedFalse();
   List<ProductEventEntity> findTop50ByPublishedFalseOrderByOccurredAtAsc();
 }

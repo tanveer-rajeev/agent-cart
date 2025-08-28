@@ -1,8 +1,8 @@
 package com.tanveer.productservice.infrustructure.api;
 
-import com.tanveer.productservice.domain.ProductService;
-import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
-import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
+import com.tanveer.productservice.application.ProductUseCase;
+import com.tanveer.productservice.application.dto.ProductRequestDto;
+import com.tanveer.productservice.application.dto.ProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-  private final ProductService productService;
+  private final ProductUseCase productUseCase;
 
   @PostMapping
   public ResponseEntity<ProductResponseDto> addProduct(@RequestBody ProductRequestDto productRequestDto) {
-    return ResponseEntity.ok(productService.addProduct(productRequestDto));
+    return ResponseEntity.ok(productUseCase.addProduct(productRequestDto));
   }
 }

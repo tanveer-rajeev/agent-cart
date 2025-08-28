@@ -22,15 +22,17 @@ public final class Order {
         this.items = items;
     }
 
-    public static Order create(String orderId, String customerId, List<OrderItem> items) {
-
+    public static Order create(String customerId, List<OrderItem> items) {
+        String orderId = UUID.randomUUID().toString();
         List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
                         item.getProductId(), EventType.ORDER_PLACED, Instant.now()))
                 .toList();
         return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
     }
 
-    public List<OrderItem> getItems() { return Collections.unmodifiableList(items); }
+    public List<OrderItem> getItems() {
+        return Collections.unmodifiableList(items);
+    }
 
     public long calculateTotalAmount() {
         return items.stream().mapToLong(OrderItem::totalPrice).sum();
