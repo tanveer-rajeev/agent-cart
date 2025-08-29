@@ -35,6 +35,10 @@ public final class Product {
         return new Product(id, name, description, sku, price, events);
     }
 
+    public static Product rehydrate(String id, String name, String description, String sku, Long price){
+        return new Product(id, name, description, sku, price, List.of());
+    }
+
     public List<ProductEvent> pullProductEvents() {
         return events;
     }

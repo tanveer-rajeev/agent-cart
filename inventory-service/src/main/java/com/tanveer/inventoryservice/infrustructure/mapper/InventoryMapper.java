@@ -5,9 +5,11 @@ import com.tanveer.inventoryservice.infrustructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrustructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrustructure.persistence.InventoryEntity;
 
+import java.util.List;
+
 public class InventoryMapper {
 
-    public static InventoryEntity toEntity(Inventory domain) {
+    public static InventoryEntity domainToEntity(Inventory domain) {
         return InventoryEntity.builder()
                 .id(domain.getId())
                 .sku(domain.getSku())
@@ -18,8 +20,8 @@ public class InventoryMapper {
                 .build();
     }
 
-    public static Inventory toDomain(InventoryEntity entity) {
-        return Inventory.builder(
+    public static Inventory entityToDomain(InventoryEntity entity) {
+        return Inventory.rehydrate(
                 entity.getId(),
                 entity.getProductId(),
                 entity.getSku(),

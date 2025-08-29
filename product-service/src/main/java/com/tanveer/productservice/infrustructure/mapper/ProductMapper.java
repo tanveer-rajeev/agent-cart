@@ -18,7 +18,8 @@ public class ProductMapper {
     }
 
     public static Product entityToDomain(ProductEntity entity) {
-        return Product.create(
+        return Product.rehydrate(
+                entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
                 entity.getSku(),
@@ -45,4 +46,3 @@ public class ProductMapper {
         );
     }
 }
-

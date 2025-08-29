@@ -35,10 +35,9 @@ public final class Inventory {
         return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(event),version);
     }
 
-    public static Inventory builder(String id, String productId, String sku, int availableQty, int reservedQty,int version) {
-        InventoryEvent event = new InventoryEvent(id, productId, sku, availableQty, EventType.INVENTORY_CREATED,
-                Instant.now());
-        return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(event), version);
+    public static Inventory rehydrate(String id, String productId, String sku, int availableQty, int reservedQty,
+                                      int version) {
+        return new Inventory(id, productId, sku, availableQty, reservedQty, List.of(), version);
     }
 
     public Inventory reserve(int quantity) {

@@ -47,7 +47,7 @@ public class OrderMapper {
 
     }
 
-    public static OrderEntity toEntity(Order order) {
+    public static OrderEntity domainToEntity(Order order) {
         return OrderEntity.builder().orderId(order.getOrderId())
                 .customerId(order.getCustomerId())
                 .items(toOrderItemEntityList(order.getItems()))
@@ -56,10 +56,10 @@ public class OrderMapper {
 
     public static Order dtoToDomain(OrderRequestDto requestDto) {
         return Order.create(requestDto.getCustomerId(), requestDto.getItems()
-                .stream().map(OrderMapper::toOrderItemDto).toList());
+                .stream().map(OrderMapper::toOrderItem).toList());
     }
 
-    public static OrderItem toOrderItemDto(OrderRequestDto.OrderItemDto orderItemDto) {
+    public static OrderItem toOrderItem(OrderRequestDto.OrderItemDto orderItemDto) {
         return new OrderItem(orderItemDto.getId(), orderItemDto.getProductId(), orderItemDto.getName(),
                 orderItemDto.getSku(), orderItemDto.getPrice(), orderItemDto.getQuantity());
     }
@@ -68,8 +68,9 @@ public class OrderMapper {
         return new OrderResponseDto(order.getOrderId(), order.getStatus(), order.calculateTotalAmount());
     }
 
-    public static Order toDomain(OrderEntity orderEntity) {
-        return Order.create(orderEntity.getOrderId(), toOrderItemList(orderEntity.getItems()));
+    public static Order entityToDomain(OrderEntity orderEntity) {
+        return Order.rehydrate(orderEntity.getOrderId(), orderEntity.getCustomerId(), orderEntity.getStatus(),
+                toOrderItemList(orderEntity.getItems()));
     }
 
     public static List<OrderItemEntity> toOrderItemEntityList(List<OrderItem> orderItems) {

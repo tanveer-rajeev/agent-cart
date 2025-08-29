@@ -16,22 +16,19 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 
     @Override
     public Inventory findBySku(String sku) {
-        Optional<InventoryEntity> inventoryEntity = repository.findBySku(sku);
-
-        if(inventoryEntity.isPresent()){
-            return InventoryMapper.toDomain(inventoryEntity.get());
-        }
-        throw new RuntimeException("Inventory not found by requested sku");
+       return repository.findBySku(sku)
+                .map(InventoryMapper::entityToDomain)
+                .orElseThrow(()-> new RuntimeException("Inventory not found by sku"));
     }
 
     @Override
     public Inventory save(Inventory inventory) {
-        return InventoryMapper.toDomain(repository.save(InventoryMapper.toEntity(inventory)));
+        return InventoryMapper.entityToDomain(repository.save(InventoryMapper.domainToEntity(inventory)));
     }
 
     @Override
     public Inventory update(Inventory inventory) {
-        return InventoryMapper.toDomain(repository.saveAndFlush(InventoryMapper.toEntity(inventory)));
+        return InventoryMapper.entityToDomain(repository.saveAndFlush(InventoryMapper.domainToEntity(inventory)));
     }
 
     @Override

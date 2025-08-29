@@ -30,6 +30,10 @@ public final class Order {
         return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
     }
 
+    public static Order rehydrate(String orderId, String customerId, OrderStatus status, List<OrderItem> items) {
+        return new Order(orderId, customerId, status, List.of(), items);
+    }
+
     public List<OrderItem> getItems() {
         return Collections.unmodifiableList(items);
     }
