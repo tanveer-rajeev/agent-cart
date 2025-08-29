@@ -1,9 +1,9 @@
 package com.tanveer.productservice.infrustructure.mapper;
 
-import com.tanveer.productservice.application.dto.ProductRequestDto;
+import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.infrustructure.persistence.ProductEntity;
-import com.tanveer.productservice.application.dto.ProductResponseDto;
+import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 
 public class ProductMapper {
 

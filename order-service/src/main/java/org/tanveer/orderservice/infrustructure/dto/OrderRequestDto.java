@@ -1,4 +1,4 @@
-package org.tanveer.orderservice.domain.dto;
+package org.tanveer.orderservice.infrustructure.dto;
 
 import lombok.Data;
 import lombok.Value;

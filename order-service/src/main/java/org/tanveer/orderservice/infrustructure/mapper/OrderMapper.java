@@ -3,7 +3,7 @@ package org.tanveer.orderservice.infrustructure.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.tanveer.orderservice.domain.dto.OrderRequestDto;
+import org.tanveer.orderservice.infrustructure.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.model.OrderEvent;
 import org.tanveer.orderservice.domain.model.OrderItem;

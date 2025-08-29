@@ -1,8 +1,8 @@
 package com.tanveer.productservice.infrustructure.service;
 
 import com.tanveer.productservice.application.ProductUseCase;
-import com.tanveer.productservice.application.dto.ProductRequestDto;
-import com.tanveer.productservice.application.dto.ProductResponseDto;
+import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
+import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 import com.tanveer.productservice.domain.ProductService;
 import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
 import lombok.AllArgsConstructor;

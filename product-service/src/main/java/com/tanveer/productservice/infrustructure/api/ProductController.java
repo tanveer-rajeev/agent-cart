@@ -1,8 +1,8 @@
 package com.tanveer.productservice.infrustructure.api;
 
 import com.tanveer.productservice.application.ProductUseCase;
-import com.tanveer.productservice.application.dto.ProductRequestDto;
-import com.tanveer.productservice.application.dto.ProductResponseDto;
+import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
+import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tanveer.orderservice.application.OrderUseCase;
-import org.tanveer.orderservice.domain.dto.OrderRequestDto;
+import org.tanveer.orderservice.infrustructure.dto.OrderRequestDto;
 import org.tanveer.orderservice.infrustructure.dto.OrderResponseDto;
 
 @RestController
