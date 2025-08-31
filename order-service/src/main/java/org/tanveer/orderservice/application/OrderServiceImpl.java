@@ -7,11 +7,11 @@ import org.tanveer.orderservice.domain.model.OrderItem;
 import org.tanveer.orderservice.domain.respository.OrderEventRepository;
 import org.tanveer.orderservice.domain.respository.OrderRepository;
 import org.tanveer.orderservice.domain.service.OrderService;
-import org.tanveer.orderservice.infrustructure.client.InventoryClient;
-import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityDto;
-import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityRequestDto;
-import org.tanveer.orderservice.infrustructure.dto.ItemAvailabilityResponseDto;
-import org.tanveer.orderservice.infrustructure.exception.OrderException;
+import org.tanveer.orderservice.infrastructure.client.InventoryClient;
+import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityDto;
+import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityRequestDto;
+import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityResponseDto;
+import org.tanveer.orderservice.infrastructure.exception.OrderException;
 
 import java.util.List;
 import java.util.Optional;

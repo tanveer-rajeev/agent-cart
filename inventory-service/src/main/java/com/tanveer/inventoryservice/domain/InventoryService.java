@@ -1,7 +1,7 @@
 package com.tanveer.inventoryservice.domain;
 
-import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityRequestDto;
-import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityResponseDto;
+import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
+import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
 
 public interface InventoryService {
     Inventory reserveStock(String sku, int quantity);

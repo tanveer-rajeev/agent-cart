@@ -4,8 +4,8 @@ import com.tanveer.commonlib.domain.EventRepository;
 import com.tanveer.productservice.domain.Product;
 import com.tanveer.productservice.domain.ProductEvent;
 import com.tanveer.productservice.domain.ProductService;
-import com.tanveer.productservice.infrustructure.mapper.ProductMapper;
-import com.tanveer.productservice.infrustructure.persistence.ProductJpaRepository;
+import com.tanveer.productservice.infrastructure.mapper.ProductMapper;
+import com.tanveer.productservice.infrastructure.persistence.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

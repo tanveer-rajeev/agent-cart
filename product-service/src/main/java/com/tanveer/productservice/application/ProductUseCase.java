@@ -1,7 +1,7 @@
 package com.tanveer.productservice.application;
 
-import com.tanveer.productservice.infrustructure.dto.ProductRequestDto;
-import com.tanveer.productservice.infrustructure.dto.ProductResponseDto;
+import com.tanveer.productservice.infrastructure.dto.ProductRequestDto;
+import com.tanveer.productservice.infrastructure.dto.ProductResponseDto;
 
 public interface ProductUseCase {
   ProductResponseDto addProduct(ProductRequestDto productRequestDto);

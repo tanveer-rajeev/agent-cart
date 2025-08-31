@@ -5,10 +5,10 @@ import com.tanveer.inventoryservice.domain.Inventory;
 import com.tanveer.inventoryservice.domain.InventoryEvent;
 import com.tanveer.inventoryservice.domain.InventoryRepository;
 import com.tanveer.inventoryservice.domain.InventoryService;
-import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityDto;
-import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityRequestDto;
-import com.tanveer.inventoryservice.infrustructure.dto.ItemAvailabilityResponseDto;
-import com.tanveer.inventoryservice.infrustructure.dto.OrderItem;
+import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityDto;
+import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
+import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
+import com.tanveer.inventoryservice.infrastructure.dto.OrderItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
