@@ -3,7 +3,6 @@ package com.tanveer.authservice.infrastructure.config;
 import com.tanveer.authservice.domain.UserServiceImpl;
 import com.tanveer.authservice.domain.UserService;
 import com.tanveer.authservice.domain.UserRepository;
-import com.tanveer.authservice.infrastructure.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,11 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class ApplicationConfig {
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService();
-    }
 
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,

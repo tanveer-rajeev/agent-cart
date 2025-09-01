@@ -19,8 +19,7 @@ import java.util.Optional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  @Autowired
-  private UserJpaRepository userJpaRepository;
+  private final UserJpaRepository userJpaRepository;
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

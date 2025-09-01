@@ -1,13 +1,10 @@
 package com.tanveer.authservice.application;
 
-import com.tanveer.authservice.domain.UserService;
 import com.tanveer.authservice.domain.User;
-import com.tanveer.authservice.infrastructure.dto.AuthResponse;
-import com.tanveer.authservice.infrastructure.dto.LoginRequestDTO;
+import com.tanveer.authservice.domain.UserService;
 import com.tanveer.authservice.infrastructure.dto.SignUpRequestDto;
 import com.tanveer.authservice.infrastructure.dto.UserResponseDTO;
 import com.tanveer.authservice.infrastructure.exception.CustomException;
-import com.tanveer.authservice.infrastructure.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
