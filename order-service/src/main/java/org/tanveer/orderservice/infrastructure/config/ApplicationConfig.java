@@ -12,8 +12,7 @@ import org.tanveer.orderservice.infrastructure.client.InventoryClient;
 public class ApplicationConfig {
 
     @Bean
-    public OrderService orderServiceImpl(InventoryClient inventoryClient, OrderRepository orderRepository,
-                                         OrderEventRepository eventRepository) {
-        return new OrderServiceImpl(inventoryClient, orderRepository, eventRepository);
+    public OrderService orderServiceImpl(OrderRepository orderRepository, OrderEventRepository eventRepository) {
+        return new OrderServiceImpl(orderRepository, eventRepository);
     }
 }

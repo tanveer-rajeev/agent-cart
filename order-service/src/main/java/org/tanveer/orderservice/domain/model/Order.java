@@ -30,6 +30,14 @@ public final class Order {
         return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
     }
 
+    public static Order pending(String customerId, List<OrderItem> items) {
+        String orderId = UUID.randomUUID().toString();
+        List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
+                        item.getProductId(), EventType.ORDER_PENDING, Instant.now()))
+                .toList();
+        return new Order(orderId, customerId, OrderStatus.ORDER_PENDING, events, items);
+    }
+
     public static Order rehydrate(String orderId, String customerId, OrderStatus status, List<OrderItem> items) {
         return new Order(orderId, customerId, status, List.of(), items);
     }
