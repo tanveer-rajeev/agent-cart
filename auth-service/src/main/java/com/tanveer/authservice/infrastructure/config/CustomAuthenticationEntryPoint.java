@@ -11,6 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.OutputStream;
+import java.util.List;
 
 @Component
 class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -18,7 +19,7 @@ class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, java.io.IOException {
-        ApiResponse re = new ApiResponse(false, "Authentication require", null);
+        ApiResponse re = new ApiResponse(false, "Authentication require", null, List.of());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         OutputStream responseStream = response.getOutputStream();

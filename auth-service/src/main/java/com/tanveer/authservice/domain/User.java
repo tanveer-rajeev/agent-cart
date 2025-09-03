@@ -12,6 +12,6 @@ public final class User {
     private final String role;
 
     public static User create(String id, String email, String password, String role) {
-        return new User(id,email,password,role);
+        return new User(id, email, password, role);
     }
 }

@@ -27,7 +27,8 @@ public class AuthController {
 
     @Operation(summary = "Signup for new user")
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) throws CustomException {
+    public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto)
+            throws CustomException {
         return ResponseEntity.status(201).body(userUseCase.saveUser(signUpRequestDto));
     }
 
@@ -39,14 +40,16 @@ public class AuthController {
 
     @Operation(summary = "Generate token on user login")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) throws CustomException {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO)
+            throws CustomException {
         return ResponseEntity.ok(authUseCase.authenticate(loginRequestDTO));
     }
 
     @Operation(summary = "Validate jwt token")
     @GetMapping("/validate")
-    public ResponseEntity<HttpStatus> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws CustomException {
+    public ResponseEntity<HttpStatus> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token)
+            throws CustomException {
         authUseCase.validateToken(token);
-        return ResponseEntity.ok().body(HttpStatus.ACCEPTED);
+        return ResponseEntity.accepted().build();
     }
 }
