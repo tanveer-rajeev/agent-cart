@@ -14,11 +14,10 @@ import org.tanveer.orderservice.infrastructure.mapper.OrderMapper;
 public class OrderEventRepositoryImpl implements OrderEventRepository {
 
     private final OrderEventJpaRepository orderEventJpaRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public void saveEvent(OrderEvent event) {
-        OrderEventEntity save = orderEventJpaRepository.save(OrderMapper.toEventEntity(event, objectMapper));
+        OrderEventEntity save = orderEventJpaRepository.save(OrderMapper.toEventEntity(event));
         log.info("Saved order event {}", save);
     }
 }

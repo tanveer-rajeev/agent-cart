@@ -17,11 +17,13 @@ import org.tanveer.orderservice.infrastructure.persistence.OrderItemEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-@Component
-@RequiredArgsConstructor
-public class OrderMapper {
 
-    public static OrderEventEntity toEventEntity(OrderEvent event, ObjectMapper objectMapper) {
+public class OrderMapper {
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+    public static OrderEventEntity toEventEntity(OrderEvent event) {
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("aggregateType", event.getAggregateType());
         payloadMap.put("customerId", event.customerId());
@@ -38,6 +40,8 @@ public class OrderMapper {
                     .aggregateId(event.getAggregateId())
                     .customerId(event.customerId())
                     .productId(event.productId())
+                    .sku(event.sku())
+                    .quantity(event.quantity())
                     .eventType(event.getEventType())
                     .occurredAt(event.getOccurredAt())
                     .payload(objectMapper.writeValueAsString(payloadMap))

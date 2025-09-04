@@ -31,7 +31,7 @@ public class InventoryEventProcessor implements EventService {
       try {
         kafkaTemplate.send(
           pendingEvent.getEventType(),
-          pendingEvent.getAggregateId().toString(),
+          pendingEvent.getAggregateId(),
           pendingEvent.getPayload()
         );
 

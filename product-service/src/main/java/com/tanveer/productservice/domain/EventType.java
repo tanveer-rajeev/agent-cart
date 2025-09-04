@@ -1,8 +1,8 @@
 package com.tanveer.productservice.domain;
 
 public enum EventType {
-  PRODUCT_CREATED("PRODUCT_CREATED"),
-  PRODUCT_UPDATED("PRODUCT_UPDATED");
+  PRODUCT_CREATED("product-created"),
+  PRODUCT_UPDATED("product-updated");
 
   private final String value;
 

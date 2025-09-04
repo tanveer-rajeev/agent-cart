@@ -56,13 +56,14 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Inventory createInventory(Inventory inventory) {
         log.info("Creating inventory {}", inventory.getProductId());
-        inventory = inventoryRepository.save(Inventory.create(
+        inventory = Inventory.create(
                 inventory.getProductId(),
                 inventory.getSku(),
                 inventory.getAvailableQty(),
                 inventory.getReservedQty(),
                 inventory.getVersion()
-        ));
+        );
+        inventoryRepository.save(inventory);
         saveEvents(inventory);
         return inventory;
     }

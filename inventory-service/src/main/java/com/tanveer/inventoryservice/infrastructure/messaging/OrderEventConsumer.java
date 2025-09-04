@@ -2,14 +2,12 @@ package com.tanveer.inventoryservice.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanveer.inventoryservice.infrastructure.dto.OrderEventDto;
-import com.tanveer.inventoryservice.infrastructure.dto.ProductEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import static com.tanveer.inventoryservice.domain.ConsumeEventType.ORDER_CANCELED;
-import static com.tanveer.inventoryservice.domain.ConsumeEventType.ORDER_PLACED;
+import static com.tanveer.inventoryservice.domain.EventType.ORDER_PLACED;
 
 @Slf4j
 @Component
@@ -26,7 +24,9 @@ public class OrderEventConsumer implements EventConsumer{
 
             OrderEventDto event = objectMapper.readValue(message, OrderEventDto.class);
 
-            log.info("Delegating event to handler");
+            log.info("Delegating event to handler {}",event);
+
+            log.info("ORDER PLACED {}",ORDER_PLACED);
 
             switch (event.eventType()) {
                 case ORDER_PLACED -> orderEventHandler.handleOrderPlaced(event);

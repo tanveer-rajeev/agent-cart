@@ -24,6 +24,8 @@ public class OrderEventProcessor implements EventService {
     @Transactional
     @Scheduled(fixedDelay = 5000)
     public void publish() {
+        log.info("Order event processing...");
+
         List<OrderEventEntity> pendingEvents = orderEventJpaRepository.findByPublishedFalse();
 
         for (OrderEventEntity event: pendingEvents){
