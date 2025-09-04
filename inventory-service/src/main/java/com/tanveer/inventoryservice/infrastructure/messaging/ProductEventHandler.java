@@ -1,9 +1,10 @@
 package com.tanveer.inventoryservice.infrastructure.messaging;
 
 import com.tanveer.inventoryservice.infrastructure.dto.ProductEventDto;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 
 public interface ProductEventHandler {
-    public void handleProductCreated(ProductEventDto event);
-    public void handleProductUpdated(ProductEventDto event);
-    public void handleProductReleased(ProductEventDto event);
+    void handleProductCreated(ProductEventDto event);
+    void handleProductUpdated(ProductEventDto event) throws InventoryException;
+
 }

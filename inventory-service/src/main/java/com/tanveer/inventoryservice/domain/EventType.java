@@ -6,7 +6,6 @@ public enum EventType {
   INVENTORY_RELEASED("inventory.released"),
   INVENTORY_ADJUST("inventory.adjust");
 
-
   private final String value;
 
   EventType(String value) {

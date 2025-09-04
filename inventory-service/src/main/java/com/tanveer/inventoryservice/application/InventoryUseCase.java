@@ -5,11 +5,12 @@ import com.tanveer.inventoryservice.infrastructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 
 public interface InventoryUseCase {
-    InventoryResponseDto reserveStock(String sku, int quantity);
-    InventoryResponseDto releaseStock(String sku, int quantity);
-    InventoryResponseDto adjustStock(String sku, int quantity);
+    InventoryResponseDto reserveStock(String sku, int quantity) throws InventoryException;
+    InventoryResponseDto releaseStock(String sku, int quantity) throws InventoryException;
+    InventoryResponseDto adjustStock(String sku, int quantity) throws InventoryException;
     InventoryResponseDto getInventoryBySku(String sku);
     ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto);
     InventoryResponseDto createInventory(InventoryRequestDto request);

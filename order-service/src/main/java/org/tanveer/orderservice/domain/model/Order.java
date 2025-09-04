@@ -25,7 +25,7 @@ public final class Order {
     public static Order create(String customerId, List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
         List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
-                        item.getProductId(), EventType.ORDER_PLACED, Instant.now()))
+                        item.getProductId(), item.getSku(), item.getQuantity(), EventType.ORDER_PLACED, Instant.now()))
                 .toList();
         return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
     }
@@ -33,7 +33,7 @@ public final class Order {
     public static Order pending(String customerId, List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
         List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
-                        item.getProductId(), EventType.ORDER_PENDING, Instant.now()))
+                        item.getProductId(), item.getSku(), item.getQuantity(), EventType.ORDER_PENDING, Instant.now()))
                 .toList();
         return new Order(orderId, customerId, OrderStatus.ORDER_PENDING, events, items);
     }

@@ -7,6 +7,7 @@ import com.tanveer.inventoryservice.infrastructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 import com.tanveer.inventoryservice.infrastructure.mapper.InventoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,18 +27,18 @@ public class InventoryUseCaseImpl implements InventoryUseCase {
     }
 
     @Override
-    public InventoryResponseDto reserveStock(String sku, int quantity) {
+    public InventoryResponseDto reserveStock(String sku, int quantity) throws InventoryException {
         return InventoryMapper.domainToResponseDto(inventoryService.reserveStock(sku,quantity));
     }
 
     @Override
-    public InventoryResponseDto releaseStock(String sku, int quantity) {
+    public InventoryResponseDto releaseStock(String sku, int quantity) throws InventoryException {
         return InventoryMapper.domainToResponseDto(inventoryService.releaseStock(sku,quantity));
     }
 
     @Override
     @Transactional
-    public InventoryResponseDto adjustStock(String sku, int quantity) {
+    public InventoryResponseDto adjustStock(String sku, int quantity) throws InventoryException {
         return InventoryMapper.domainToResponseDto(inventoryService.adjustStock(sku,quantity));
     }
 
@@ -46,7 +47,6 @@ public class InventoryUseCaseImpl implements InventoryUseCase {
         return InventoryMapper.domainToResponseDto(inventoryService.getInventoryBySku(sku));
     }
 
-    // TODO: shouldn't be here
     @Override
     public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
         return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);

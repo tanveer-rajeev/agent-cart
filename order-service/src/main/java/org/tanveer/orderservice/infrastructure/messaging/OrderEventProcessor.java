@@ -27,7 +27,7 @@ public class OrderEventProcessor implements EventService {
         List<OrderEventEntity> pendingEvents = orderEventJpaRepository.findByPublishedFalse();
 
         for (OrderEventEntity event: pendingEvents){
-            kafkaTemplate.send(event.getEventType(), event.getAggregateId().toString(), event.getPayload());
+            kafkaTemplate.send(event.getEventType(), event.getAggregateId(), event.getPayload());
 
             log.info("Sent {} event to topic {}", event.getEventType(), event.getEventType());
 

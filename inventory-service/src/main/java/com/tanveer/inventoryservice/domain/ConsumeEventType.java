@@ -2,7 +2,8 @@ package com.tanveer.inventoryservice.domain;
 
 public enum ConsumeEventType {
     PRODUCT_CREATED("product-created"),
-    PRODUCT_RESERVED("product-reserved"),
+    ORDER_PLACED("order.placed"),
+    ORDER_CANCELED("order.canceled"),
     PRODUCT_UPDATED("product-updated");
 
     private final String value;

@@ -3,6 +3,8 @@ package org.tanveer.orderservice.infrastructure.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.tanveer.orderservice.infrastructure.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.model.OrderEvent;
@@ -15,18 +17,17 @@ import org.tanveer.orderservice.infrastructure.persistence.OrderItemEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Component
+@RequiredArgsConstructor
 public class OrderMapper {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-    public static OrderEventEntity toEventEntity(OrderEvent event) {
+    public static OrderEventEntity toEventEntity(OrderEvent event, ObjectMapper objectMapper) {
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("aggregateType", event.getAggregateType());
         payloadMap.put("customerId", event.customerId());
         payloadMap.put("productId", event.productId());
+        payloadMap.put("sku", event.sku());
+        payloadMap.put("quantity", event.quantity());
         payloadMap.put("aggregateId", event.getAggregateId());
         payloadMap.put("eventType", event.getEventType());
         payloadMap.put("occurredAt", event.getOccurredAt() != null ? event.getOccurredAt().toString() : null);
