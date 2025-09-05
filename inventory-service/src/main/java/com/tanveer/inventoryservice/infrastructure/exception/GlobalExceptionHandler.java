@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InventoryException.class)
-    public ResponseEntity<String> handlePaymentException(InventoryException ex) {
+    public ResponseEntity<ApiResponse> handlePaymentException(InventoryException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
+                .body(ApiResponse.builder()
+                        .message(ex.getMessage())
+                        .success(false)
+                        .data(null).build());
     }
 }

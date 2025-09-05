@@ -24,7 +24,8 @@ public class InventoryController {
     }
 
     @PostMapping("/availability")
-    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
+    public ItemAvailabilityResponseDto checkProductsAvailability(
+            @RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 
@@ -34,17 +35,20 @@ public class InventoryController {
     }
 
     @PostMapping("/adjust/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
+    public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity)
+            throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.adjustStock(sku, quantity));
     }
 
     @PostMapping("/release/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
+    public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity)
+            throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.releaseStock(sku, quantity));
     }
 
     @PostMapping("/reverse/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
+    public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity)
+            throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.reserveStock(sku, quantity));
     }
 }

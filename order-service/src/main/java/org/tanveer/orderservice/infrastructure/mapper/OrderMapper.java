@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityDto;
 import org.tanveer.orderservice.infrastructure.dto.OrderRequestDto;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.model.OrderEvent;
@@ -69,8 +70,9 @@ public class OrderMapper {
                 orderItemDto.getSku(), orderItemDto.getPrice(), orderItemDto.getQuantity());
     }
 
-    public static OrderResponseDto domainToResponseDto(Order order) {
-        return new OrderResponseDto(order.getOrderId(), order.getStatus(), order.calculateTotalAmount());
+    public static OrderResponseDto domainToResponseDto(Order order, List<ItemAvailabilityDto> availabilityDto) {
+        return new OrderResponseDto(order.getOrderId(), order.getStatus(), order.calculateTotalAmount(),
+                availabilityDto);
     }
 
     public static Order entityToDomain(OrderEntity orderEntity) {

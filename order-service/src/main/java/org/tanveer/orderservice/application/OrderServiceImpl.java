@@ -10,13 +10,11 @@ import org.tanveer.orderservice.domain.service.OrderService;
 @Slf4j
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-
     private final OrderRepository orderRepository;
     private final OrderEventRepository orderEventRepository;
 
     @Override
     public Order create(Order order) {
-
         log.info("Creating order for the customer{} ", order.getCustomerId());
 
         order = Order.create(order.getCustomerId(), order.getItems());
@@ -39,6 +37,10 @@ public class OrderServiceImpl implements OrderService {
         log.info("Saving pending order of customer {}", order.getCustomerId());
 
         orderRepository.save(order);
+
+        log.info("Saving all events of the pending order of customer {}", order.getCustomerId());
+
+        order.pullOrderEvents().forEach(orderEventRepository::saveEvent);
         return order;
     }
 

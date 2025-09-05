@@ -42,7 +42,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto)
+            throws InventoryException {
         List<ItemAvailabilityDto> list = new ArrayList<>();
 
         for (OrderItem item : itemAvailabilityRequestDto.orderItemList()) {
