@@ -15,6 +15,7 @@ import org.tanveer.orderservice.infrastructure.mapper.OrderMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static org.tanveer.orderservice.domain.model.EventType.ORDER_PLACED;
 import static org.tanveer.orderservice.infrastructure.exception.ErrorMessage.ITEMS_UNAVAILABLE;
@@ -32,7 +33,7 @@ public class OrderUseCaseImpl implements OrderUseCase {
     @CircuitBreaker(name = "inventoryService", fallbackMethod = "pendingOrderCreate")
     public OrderResponseDto create(OrderRequestDto orderRequestDto) {
         Order domain = OrderMapper.dtoToDomain(orderRequestDto);
-        return handleOrder(domain, (order, orderId) -> orderService.create(order));
+        return handleOrder(domain, orderService::create);
     }
 
     @Override
@@ -40,10 +41,10 @@ public class OrderUseCaseImpl implements OrderUseCase {
     @CircuitBreaker(name = "inventoryService", fallbackMethod = "pendingOrderUpdate")
     public OrderResponseDto update(OrderRequestDto orderRequestDto, String id) {
         Order domain = OrderMapper.dtoToDomain(orderRequestDto);
-        return handleOrder(domain, (order, orderId) -> orderService.update(order, id));
+        return handleOrder(domain, order -> orderService.update(order, id));
     }
 
-    private OrderResponseDto handleOrder(Order domain, BiFunction<Order, String, Order> saveFunction) {
+    private OrderResponseDto handleOrder(Order domain, Function<Order, Order> saveFunction) {
         List<ItemAvailabilityDto> itemAvailabilityDto = checkOrderItemAvailability(domain);
 
         if (!itemAvailabilityDto.isEmpty()) {
@@ -51,7 +52,7 @@ public class OrderUseCaseImpl implements OrderUseCase {
             return OrderMapper.domainToResponseDto(pending, itemAvailabilityDto);
         }
 
-        Order savedOrder = saveFunction.apply(domain, null);
+        Order savedOrder = saveFunction.apply(domain);
         return OrderMapper.domainToResponseDto(savedOrder, Collections.emptyList());
     }
 
