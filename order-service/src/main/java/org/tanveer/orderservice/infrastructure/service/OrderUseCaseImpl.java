@@ -41,9 +41,6 @@ public class OrderUseCaseImpl implements OrderUseCase {
         return OrderMapper.domainToResponseDto(orderService.update(domain, id));
     }
 
-    /**
-     * Fallback for create order
-     */
     @Transactional
     private OrderResponseDto pendingOrderCreate(OrderRequestDto order, Throwable ex) {
         log.error("Inventory service unavailable while creating order. Saving order as PENDING.", ex);
@@ -51,9 +48,6 @@ public class OrderUseCaseImpl implements OrderUseCase {
         );
     }
 
-    /**
-     * Fallback for update order
-     */
     @Transactional
     private OrderResponseDto pendingOrderUpdate(OrderRequestDto order, String id, Throwable ex) {
         log.error("Inventory service unavailable while updating order {}. Saving order as PENDING.", id, ex);
