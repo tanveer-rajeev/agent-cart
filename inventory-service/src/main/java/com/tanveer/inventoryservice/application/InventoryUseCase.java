@@ -11,8 +11,8 @@ public interface InventoryUseCase {
     InventoryResponseDto reserveStock(String sku, int quantity) throws InventoryException;
     InventoryResponseDto releaseStock(String sku, int quantity) throws InventoryException;
     InventoryResponseDto adjustStock(String sku, int quantity) throws InventoryException;
-    InventoryResponseDto getInventoryBySku(String sku);
-    ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto);
+    InventoryResponseDto getInventoryBySku(String sku) throws InventoryException;
+    ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException;
     InventoryResponseDto createInventory(InventoryRequestDto request);
     Inventory updateInventory(InventoryRequestDto inventory);
 }

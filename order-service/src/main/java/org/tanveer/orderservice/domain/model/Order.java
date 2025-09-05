@@ -30,6 +30,13 @@ public final class Order {
         return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
     }
 
+    public static Order update(String orderId, String customerId, List<OrderItem> items) {
+        List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,
+                        item.getProductId(), item.getSku(), item.getQuantity(), EventType.ORDER_PLACED, Instant.now()))
+                .toList();
+        return new Order(orderId, customerId, OrderStatus.ORDER_PLACED, events, items);
+    }
+
     public static Order pending(String customerId, List<OrderItem> items) {
         String orderId = UUID.randomUUID().toString();
         List<OrderEvent> events = items.stream().map(item -> new OrderEvent(orderId, customerId,

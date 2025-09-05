@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.domain.respository.OrderRepository;
+import org.tanveer.orderservice.infrastructure.exception.OrderNotFoundException;
 import org.tanveer.orderservice.infrastructure.mapper.OrderMapper;
 
 @RequiredArgsConstructor
@@ -15,5 +16,16 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Order save(Order order) {
         return OrderMapper.entityToDomain(orderJpaRepository.save(OrderMapper.domainToEntity(order)));
+    }
+
+    @Override
+    public Order update(Order order) {
+        return OrderMapper.entityToDomain(orderJpaRepository.saveAndFlush(OrderMapper.domainToEntity(order)));
+    }
+
+    @Override
+    public Order findById(String id) {
+        return OrderMapper.entityToDomain(orderJpaRepository.findById(id)
+                .stream().findFirst().orElseThrow(() -> new OrderNotFoundException("Order not found by given id")));
     }
 }

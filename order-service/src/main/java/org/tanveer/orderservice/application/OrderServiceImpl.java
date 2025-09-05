@@ -3,19 +3,9 @@ package org.tanveer.orderservice.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.tanveer.orderservice.domain.model.Order;
-import org.tanveer.orderservice.domain.model.OrderItem;
-import org.tanveer.orderservice.domain.model.OrderStatus;
 import org.tanveer.orderservice.domain.respository.OrderEventRepository;
 import org.tanveer.orderservice.domain.respository.OrderRepository;
 import org.tanveer.orderservice.domain.service.OrderService;
-import org.tanveer.orderservice.infrastructure.client.InventoryClient;
-import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityDto;
-import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityRequestDto;
-import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityResponseDto;
-import org.tanveer.orderservice.infrastructure.exception.OrderException;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,5 +40,20 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
         return order;
+    }
+
+    @Override
+    public Order update(Order order, String id) {
+        Order byId = orderRepository.findById(id);
+        Order domain = Order.update(byId.getOrderId(), byId.getCustomerId(), byId.getItems());
+
+        log.info("Updating order of customer {}", order.getCustomerId());
+
+        orderRepository.update(domain);
+
+        log.info("Saving all events of the updated order");
+
+        order.pullOrderEvents().forEach(orderEventRepository::saveEvent);
+        return domain;
     }
 }

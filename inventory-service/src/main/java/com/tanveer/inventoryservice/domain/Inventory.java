@@ -42,10 +42,10 @@ public final class Inventory {
     }
 
     public Inventory reserve(int quantity) throws InventoryException {
-        if (quantity > availableQty ) {
+        if ((quantity + reservedQty) > availableQty) {
             throw new InventoryException("Insufficient stock");
         }
-        quantity = availableQty - quantity;
+        quantity = (availableQty - quantity) + reservedQty;
         InventoryEvent event = new InventoryEvent(id, productId, sku, quantity, EventType.INVENTORY_RESERVED,
                 Instant.now());
         return new Inventory(id, productId, sku, availableQty, quantity, List.of(event), version);

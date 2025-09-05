@@ -19,12 +19,12 @@ public class InventoryController {
     private final InventoryUseCase inventoryService;
 
     @GetMapping("/{sku}")
-    public InventoryResponseDto getBySku(@PathVariable String sku) {
+    public InventoryResponseDto getBySku(@PathVariable String sku) throws InventoryException {
         return inventoryService.getInventoryBySku(sku);
     }
 
     @PostMapping("/availability")
-    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 

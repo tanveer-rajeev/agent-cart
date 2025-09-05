@@ -11,9 +11,9 @@ public interface InventoryService {
 
     Inventory adjustStock(String sku, int quantity) throws InventoryException;
 
-    Inventory getInventoryBySku(String sku);
+    Inventory getInventoryBySku(String sku) throws InventoryException;
 
-    ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto);
+    ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException;
 
     Inventory createInventory(Inventory request);
 

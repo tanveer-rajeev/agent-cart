@@ -5,4 +5,6 @@ import org.tanveer.orderservice.infrastructure.dto.OrderResponseDto;
 
 public interface OrderUseCase {
     OrderResponseDto create(OrderRequestDto order);
+
+    OrderResponseDto update(OrderRequestDto order, String id);
 }

@@ -10,7 +10,7 @@ import org.tanveer.orderservice.domain.model.Order;
 import org.tanveer.orderservice.infrastructure.client.InventoryClient;
 import org.tanveer.orderservice.infrastructure.dto.*;
 import org.tanveer.orderservice.domain.service.OrderService;
-import org.tanveer.orderservice.infrastructure.exception.OrderException;
+import org.tanveer.orderservice.infrastructure.exception.OrderedItemNotFoundException;
 import org.tanveer.orderservice.infrastructure.mapper.OrderMapper;
 
 import java.util.Optional;
@@ -25,30 +25,59 @@ public class OrderUseCaseImpl implements OrderUseCase {
 
     @Override
     @Transactional
-    @CircuitBreaker(name = "inventoryService", fallbackMethod = "pendingOrderHandler")
+    @CircuitBreaker(name = "inventoryService", fallbackMethod = "pendingOrderCreate")
     public OrderResponseDto create(OrderRequestDto order) {
         Order domain = OrderMapper.dtoToDomain(order);
-        log.info("Making api call to inventory service to check product availability {}",
-                order.getCustomerId());
-
-        ItemAvailabilityResponseDto itemAvailabilityResponseDto =
-                inventoryClient.checkProductsAvailability(new ItemAvailabilityRequestDto(domain.getItems()));
-
-        log.info("Get availability response result {}", itemAvailabilityResponseDto);
-
-        Optional<ItemAvailabilityDto> unavailableProductList = itemAvailabilityResponseDto.itemAvailabilityDto()
-                .stream().filter(product -> !product.isAvailable())
-                .findAny();
-
-        if(unavailableProductList.isPresent()) {
-            throw new OrderException("Some products not available",unavailableProductList.get());
-        }
+        checkOrderItemAvailability(domain);
         return OrderMapper.domainToResponseDto(orderService.create(domain));
     }
 
+    @Override
     @Transactional
-    private OrderResponseDto pendingOrderHandler(OrderRequestDto order, Throwable ex) {
-        log.error("Inventory service unavailable, saving order as PENDING", ex);
-        return OrderMapper.domainToResponseDto(orderService.pendingOrderHandler(OrderMapper.dtoToDomain(order)));
+    @CircuitBreaker(name = "inventoryService", fallbackMethod = "pendingOrderUpdate")
+    public OrderResponseDto update(OrderRequestDto order, String id) {
+        Order domain = OrderMapper.dtoToDomain(order);
+        checkOrderItemAvailability(domain);
+        return OrderMapper.domainToResponseDto(orderService.update(domain, id));
+    }
+
+    /**
+     * Fallback for create order
+     */
+    @Transactional
+    private OrderResponseDto pendingOrderCreate(OrderRequestDto order, Throwable ex) {
+        log.error("Inventory service unavailable while creating order. Saving order as PENDING.", ex);
+        return OrderMapper.domainToResponseDto(orderService.pendingOrderHandler(OrderMapper.dtoToDomain(order))
+        );
+    }
+
+    /**
+     * Fallback for update order
+     */
+    @Transactional
+    private OrderResponseDto pendingOrderUpdate(OrderRequestDto order, String id, Throwable ex) {
+        log.error("Inventory service unavailable while updating order {}. Saving order as PENDING.", id, ex);
+        return OrderMapper.domainToResponseDto(orderService.pendingOrderHandler(OrderMapper.dtoToDomain(order))
+        );
+    }
+
+    @Transactional(readOnly = true)
+    private void checkOrderItemAvailability(Order order) {
+        log.info("Checking product availability for customer {}", order.getCustomerId());
+
+        ItemAvailabilityResponseDto availabilityResponse =
+                inventoryClient.checkProductsAvailability(new ItemAvailabilityRequestDto(order.getItems()));
+
+        log.info("Received inventory check response {}", availabilityResponse);
+
+        availabilityResponse.itemAvailabilityDto()
+                .stream()
+                .filter(product -> !product.isAvailable())
+                .findAny()
+                .ifPresent(unavailable -> {
+                    throw new OrderedItemNotFoundException(
+                            "Some products are not available", unavailable
+                    );
+                });
     }
 }

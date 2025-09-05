@@ -2,11 +2,11 @@ package org.tanveer.orderservice.infrastructure.exception;
 
 import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityDto;
 
-public class OrderException extends RuntimeException {
+public class OrderedItemNotFoundException extends RuntimeException {
 
     private final ItemAvailabilityDto availableProductResponseDto;
 
-    public OrderException (String message, ItemAvailabilityDto availableProductResponseDto1){
+    public OrderedItemNotFoundException(String message, ItemAvailabilityDto availableProductResponseDto1){
         super(message);
         this.availableProductResponseDto = availableProductResponseDto1;
     }

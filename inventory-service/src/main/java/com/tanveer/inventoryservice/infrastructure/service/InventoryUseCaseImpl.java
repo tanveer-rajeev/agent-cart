@@ -43,12 +43,12 @@ public class InventoryUseCaseImpl implements InventoryUseCase {
     }
 
     @Override
-    public InventoryResponseDto getInventoryBySku(String sku) {
+    public InventoryResponseDto getInventoryBySku(String sku) throws InventoryException {
         return InventoryMapper.domainToResponseDto(inventoryService.getInventoryBySku(sku));
     }
 
     @Override
-    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 

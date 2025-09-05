@@ -37,12 +37,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Inventory getInventoryBySku(String sku) {
+    public Inventory getInventoryBySku(String sku) throws InventoryException {
         return inventoryRepository.findBySku(sku);
     }
 
     @Override
-    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         List<ItemAvailabilityDto> list = new ArrayList<>();
 
         for (OrderItem item : itemAvailabilityRequestDto.orderItemList()) {
