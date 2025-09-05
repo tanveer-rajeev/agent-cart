@@ -1,14 +1,12 @@
 package com.tanveer.inventoryservice.application;
 
 import com.tanveer.commonlib.domain.EventRepository;
-import com.tanveer.inventoryservice.domain.Inventory;
-import com.tanveer.inventoryservice.domain.InventoryEvent;
-import com.tanveer.inventoryservice.domain.InventoryRepository;
-import com.tanveer.inventoryservice.domain.InventoryService;
+import com.tanveer.inventoryservice.domain.*;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
 import com.tanveer.inventoryservice.infrastructure.dto.OrderItem;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,27 +22,27 @@ public class InventoryServiceImpl implements InventoryService {
     private final EventRepository<InventoryEvent> eventRepository;
 
     @Override
-    public Inventory reserveStock(String sku, int quantity) {
+    public Inventory reserveStock(String sku, int quantity) throws InventoryException {
         return executeInventoryAction(sku,inventory -> inventory.reserve(quantity));
     }
 
     @Override
-    public Inventory releaseStock(String sku, int quantity) {
+    public Inventory releaseStock(String sku, int quantity) throws InventoryException {
         return executeInventoryAction(sku,inventory -> inventory.release(quantity));
     }
 
     @Override
-    public Inventory adjustStock(String sku, int quantity) {
+    public Inventory adjustStock(String sku, int quantity) throws InventoryException {
         return executeInventoryAction(sku,inventory -> inventory.adjust(quantity));
     }
 
     @Override
-    public Inventory getInventoryBySku(String sku) {
+    public Inventory getInventoryBySku(String sku) throws InventoryException {
         return inventoryRepository.findBySku(sku);
     }
 
     @Override
-    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+    public ItemAvailabilityResponseDto checkProductsAvailability(ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         List<ItemAvailabilityDto> list = new ArrayList<>();
 
         for (OrderItem item : itemAvailabilityRequestDto.orderItemList()) {
@@ -58,13 +56,14 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Inventory createInventory(Inventory inventory) {
         log.info("Creating inventory {}", inventory.getProductId());
-        inventory = inventoryRepository.save(Inventory.create(
+        inventory = Inventory.create(
                 inventory.getProductId(),
                 inventory.getSku(),
                 inventory.getAvailableQty(),
                 inventory.getReservedQty(),
                 inventory.getVersion()
-        ));
+        );
+        inventoryRepository.save(inventory);
         saveEvents(inventory);
         return inventory;
     }
@@ -74,7 +73,7 @@ public class InventoryServiceImpl implements InventoryService {
         return null;
     }
 
-    private Inventory executeInventoryAction(String sku, Function<Inventory, Inventory> action) {
+    private Inventory executeInventoryAction(String sku, InventoryAction action) throws InventoryException {
 
         Inventory inventory = inventoryRepository.findBySku(sku);
 

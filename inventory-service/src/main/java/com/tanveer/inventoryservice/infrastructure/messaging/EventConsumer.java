@@ -1,5 +1,8 @@
 package com.tanveer.inventoryservice.infrastructure.messaging;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
+
 public interface EventConsumer {
-    public void consume(String message);
+    void consume(String message) throws InventoryException, JsonProcessingException;
 }

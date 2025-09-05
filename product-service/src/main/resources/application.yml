@@ -29,8 +29,8 @@ spring:
 
 topic:
   map:
-    PRODUCT_CREATED: product-created
-    PRODUCT_UPDATED: product-updated
+    product-created: product-created
+    product-updated: product-updated
 
 logging:
   level:

@@ -5,6 +5,7 @@ import com.tanveer.inventoryservice.infrastructure.dto.InventoryRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.InventoryResponseDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityRequestDto;
 import com.tanveer.inventoryservice.infrastructure.dto.ItemAvailabilityResponseDto;
+import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,12 @@ public class InventoryController {
     private final InventoryUseCase inventoryService;
 
     @GetMapping("/{sku}")
-    public InventoryResponseDto getBySku(@PathVariable String sku) {
+    public InventoryResponseDto getBySku(@PathVariable String sku) throws InventoryException {
         return inventoryService.getInventoryBySku(sku);
     }
 
     @PostMapping("/availability")
-    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) {
+    public ItemAvailabilityResponseDto checkProductsAvailability(@RequestBody ItemAvailabilityRequestDto itemAvailabilityRequestDto) throws InventoryException {
         return inventoryService.checkProductsAvailability(itemAvailabilityRequestDto);
     }
 
@@ -33,17 +34,17 @@ public class InventoryController {
     }
 
     @PostMapping("/adjust/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity) {
+    public ResponseEntity<InventoryResponseDto> adjustStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.adjustStock(sku, quantity));
     }
 
     @PostMapping("/release/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity) {
+    public ResponseEntity<InventoryResponseDto> releaseStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.releaseStock(sku, quantity));
     }
 
     @PostMapping("/reverse/{sku}/{quantity}")
-    public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity) {
+    public ResponseEntity<InventoryResponseDto> reserveStock(@PathVariable String sku, @PathVariable Integer quantity) throws InventoryException {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.reserveStock(sku, quantity));
     }
 }

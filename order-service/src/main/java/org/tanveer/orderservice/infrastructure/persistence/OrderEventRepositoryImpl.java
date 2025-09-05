@@ -1,5 +1,6 @@
 package org.tanveer.orderservice.infrastructure.persistence;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,6 @@ public class OrderEventRepositoryImpl implements OrderEventRepository {
     @Override
     public void saveEvent(OrderEvent event) {
         OrderEventEntity save = orderEventJpaRepository.save(OrderMapper.toEventEntity(event));
-        log.info("Saved order event {}",save);
+        log.info("Saved order event {}", save);
     }
 }

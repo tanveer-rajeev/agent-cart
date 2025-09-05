@@ -76,13 +76,27 @@ management:
       exposure:
         include: hystrix.stream, health, info
 
-hystrix:
-  command:
-    fallback:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 5000
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        registerHealthIndicator: true
+    instances:
+      paymentCircuitBreaker:
+        baseConfig: default
+      orderCircuitBreaker:
+        baseConfig: default
+      identityCircuitBreaker:
+        baseConfig: default
+      productCircuitBreaker:
+        baseConfig: default
+      inventoryCircuitBreaker:
+        baseConfig: default
 
 
 logging:

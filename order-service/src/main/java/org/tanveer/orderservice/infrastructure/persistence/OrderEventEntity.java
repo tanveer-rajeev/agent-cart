@@ -27,4 +27,10 @@ public class OrderEventEntity extends EventEntity {
 
     @Column(name = "product_id",nullable = false)
     private String productId;
+
+    @Column(name = "sku",nullable = false)
+    private String sku;
+
+    @Column(name = "quantity",nullable = false)
+    private int quantity;
 }

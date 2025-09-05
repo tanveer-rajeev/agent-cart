@@ -9,8 +9,8 @@ import org.tanveer.orderservice.infrastructure.dto.ItemAvailabilityDto;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OrderException.class)
-    public ResponseEntity<ItemAvailabilityDto> handlePaymentException(OrderException ex) {
+    @ExceptionHandler(OrderedItemNotFoundException.class)
+    public ResponseEntity<ItemAvailabilityDto> handlePaymentException(OrderedItemNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getOrderResponse());

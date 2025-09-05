@@ -2,6 +2,7 @@ package org.tanveer.orderservice.domain.model;
 
 public enum EventType {
     ORDER_PLACED("order-placed"),
+    ORDER_PENDING("order-pending"),
     ORDER_CONFIRMED("order-confirmed"),
     ORDER_CANCELED("order-canceled");
 

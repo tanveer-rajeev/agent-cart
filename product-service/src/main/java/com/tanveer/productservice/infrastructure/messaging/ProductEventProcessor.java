@@ -37,13 +37,15 @@ public class ProductEventProcessor implements EventService {
         if (topic == null) {
           log.warn("No topic configured for event type {}", eventType);
         } else {
-          kafkaTemplate.send(topic, event.getAggregateId().toString(), event.getPayload());
+          kafkaTemplate.send(topic, event.getAggregateId(), event.getPayload());
           log.info("Sent {} event to topic {}", eventType, topic);
         }
 
         event.markPublished();
         eventRepository.saveAndFlush(event);
+
         log.info("Sent {} event for SKU {} of aggregate {}", event.getEventType(), event.getSku(), event.getAggregateType());
+
       } catch (Exception e) {
         log.error("Failed to send event {} for SKU {}", event.getEventType(), event.getSku(), e);
       }

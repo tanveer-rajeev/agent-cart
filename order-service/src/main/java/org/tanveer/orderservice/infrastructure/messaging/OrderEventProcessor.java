@@ -24,10 +24,12 @@ public class OrderEventProcessor implements EventService {
     @Transactional
     @Scheduled(fixedDelay = 5000)
     public void publish() {
+        log.info("Order event processing...");
+
         List<OrderEventEntity> pendingEvents = orderEventJpaRepository.findByPublishedFalse();
 
         for (OrderEventEntity event: pendingEvents){
-            kafkaTemplate.send(event.getEventType(), event.getAggregateId().toString(), event.getPayload());
+            kafkaTemplate.send(event.getEventType(), event.getAggregateId(), event.getPayload());
 
             log.info("Sent {} event to topic {}", event.getEventType(), event.getEventType());
 

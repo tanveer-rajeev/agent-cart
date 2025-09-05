@@ -4,4 +4,8 @@ import org.tanveer.orderservice.domain.model.Order;
 
 public interface OrderRepository {
     Order save(Order order);
+
+    Order update(Order order);
+
+    Order findById(String id);
 }
