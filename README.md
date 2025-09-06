@@ -10,7 +10,7 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Kafka: asynchronous inter-service events, idempotent consumers
 
-- Outbox pattern: product-service emits inventory.created events, order-service emits order.placed events; scheduled job delivers events reliably
+- Outbox pattern: product-service emits inventory. created events, order-service emits order.placed events; scheduled job delivers events reliably
 
 - DDD + Hexagonal: domain-centric code, adapters for api, persistence, and messaging
 
@@ -31,10 +31,9 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 ```
 
 ## Tech stack
-
 - Java 21, Spring Boot 3
 
-- Spring Cloud 2023.x (Eureka, Config Server, Gateway)
+- Spring Cloud 2025.0.0 (Eureka, Config Server, Gateway)
 
 - Apache Kafka and Spring for Apache Kafka
 
@@ -47,6 +46,27 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 - Docker
 
 ## Service overview
+
+# service-registry
+
+- Provides service discovery using Netflix Eureka Server.
+  
+- Allows services to register themselves and discover other services dynamically.
+
+# cloud-config-server
+
+- Centralized configuration management for all microservices.
+
+- Stores common configuration in GitHub.
+
+- Each service reads the configuration from the config server.
+
+# api-gateway
+
+- Acts as a single entry point for client requests.
+
+- Handles routing, JWT Authentication, and forwards requests to the appropriate service.
+  
 # auth-service
 
 - JWT-based authentication and token validation
@@ -57,7 +77,7 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Owns product catalog (name, price, SKU)
 
-- Emits outbox events for inventory.created
+- Emits outbox events for inventory.created event
 
 - Exposes CRUD APIs for products
 
@@ -65,9 +85,11 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Tracks stock levels per SKU
 
-- Consumes inventory.created to create initial stock record
+- Consumes inventory.created an event to create an initial stock record, which is 0 at first entry.
 
-- Consumes order.placed and produces inventory.reserved or inventory.rejected
+- Adds stock by api
+
+- Consumes order.placed and produces inventory.reserved or inventory.release event.
 
 # order-service
 
@@ -82,8 +104,9 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 ## High-level Design & Future Improvement Plan
 
-- AI is not implemented yet. The plan is to integrate Spring AI or LangChain4j with Ollama to build a complete agent-driven cart. (Work in progress)
-- Payment and Notification services are not yet completed.
+- AI Integration – Planned integration of Spring AI or LangChain4j with Ollama to implement an agent-driven shopping cart. (In progress)
+  
+- Payment & Notification Services – Development is pending and will be completed in upcoming iterations.
 
   
 <img width="1364" height="807" alt="high level desgin" src="https://github.com/user-attachments/assets/a05f0056-6a0a-42e9-b1e6-4b779a2e734a" />
