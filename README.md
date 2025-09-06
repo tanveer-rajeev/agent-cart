@@ -112,3 +112,9 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 <img width="1364" height="807" alt="high level desgin" src="https://github.com/user-attachments/assets/a05f0056-6a0a-42e9-b1e6-4b779a2e734a" />
 
 
+## Sample of Outbox Pattern flow
+
+<img width="1218" height="569" alt="Screenshot 2025-09-06 114545" src="https://github.com/user-attachments/assets/36cd02ad-945a-4007-b256-0ef27c186b6d" />
+
+
+
