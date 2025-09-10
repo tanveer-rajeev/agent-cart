@@ -9,6 +9,7 @@ import com.tanveer.inventoryservice.infrastructure.messaging.EventConsumer;
 import com.tanveer.inventoryservice.infrastructure.messaging.EventHandlerRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -20,7 +21,9 @@ public class ProductEventConsumer extends AbstractEventConsumer<ProductEventDto>
     }
 
     @KafkaListener(topics = {"product-created", "product-updated"}, groupId = "inventory-service-01")
-    public void consume(String message) throws InventoryException, JsonProcessingException {
+    public void consume(String message, Acknowledgment ack) throws InventoryException, JsonProcessingException {
          process(message);
+         log.info("Acknowledging the message processed safely");
+         ack.acknowledge();
     }
 }
