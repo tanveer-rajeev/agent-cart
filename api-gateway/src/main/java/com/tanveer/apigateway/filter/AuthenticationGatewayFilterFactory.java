@@ -13,49 +13,49 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 public class AuthenticationGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
 
-  private final RouteValidator validator;
-  private final WebClient webClient;
+    private final RouteValidator validator;
+    private final WebClient webClient;
 
-  public AuthenticationGatewayFilterFactory(WebClient.Builder webClientBuilder,
-                                            RouteValidator routeValidator,
-                                            @Value("${auth.service.url}") String authServiceUrl) {
+    public AuthenticationGatewayFilterFactory(WebClient.Builder webClientBuilder,
+                                              RouteValidator routeValidator,
+                                              @Value("${auth.service.url}") String authServiceUrl) {
 
-    this.webClient = webClientBuilder.baseUrl(authServiceUrl).build();
-    this.validator = routeValidator;
-  }
+        this.webClient = webClientBuilder.baseUrl(authServiceUrl).build();
+        this.validator = routeValidator;
+    }
 
-  @Override
-  public GatewayFilter apply(Object config) {
-    return ((exchange, chain) -> {
-      log.info("Auth filter triggered for ");
+    @Override
+    public GatewayFilter apply(Object config) {
+        return ((exchange, chain) -> {
+            log.info("Auth filter triggered for ");
 
-      if (validator.isSecured.test(exchange.getRequest())) {
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+            if (validator.isSecured.test(exchange.getRequest())) {
+                String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (!authHeader.startsWith("Bearer ")) {
-          log.warn("Missing or invalid authorization header");
-          exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-          return exchange.getResponse().setComplete();
-        }
+                if (authHeader != null && !authHeader.startsWith("Bearer ")) {
+                    log.warn("Missing or invalid authorization header");
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                }
 
-        return webClient.get()
-          .uri("/api/v1/auth/validate")
-          .header(HttpHeaders.AUTHORIZATION, authHeader)
-          .retrieve()
-          .toBodilessEntity()
-          .then(chain.filter(exchange))
-          .onErrorResume(e -> {
-            log.warn("Token validation failed: {}", e.getMessage());
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
-          });
-      }
-      return chain.filter(exchange);
-    });
-  }
+                return webClient.get()
+                        .uri("/api/v1/auth/validate")
+                        .header(HttpHeaders.AUTHORIZATION, authHeader)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .then(chain.filter(exchange))
+                        .onErrorResume(e -> {
+                            log.warn("Token validation failed: {}", e.getMessage());
+                            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                            return exchange.getResponse().setComplete();
+                        });
+            }
+            return chain.filter(exchange);
+        });
+    }
 
-  public static class Config {
+    public static class Config {
 
-  }
+    }
 }
 

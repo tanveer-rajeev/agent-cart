@@ -17,7 +17,7 @@ public class FallBackController {
         return Mono.just("Payment service taking too long to respond or is down.Please try again later");
     }
 
-    @RequestMapping("/identityFallBack")
+    @RequestMapping("/authFallBack")
     public Mono<String> identityServiceFallBack(){
         return Mono.just("Identity service taking too long to respond or is down.Please try again later");
     }

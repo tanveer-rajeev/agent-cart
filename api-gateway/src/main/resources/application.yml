@@ -8,17 +8,6 @@ spring:
       server:
         webflux:
           routes:
-            - id: payment-service
-              uri: lb://PAYMENT-SERVICE
-              predicates:
-                - Path=/payment/**
-              filters:
-                - name: Authentication
-                - name: CircuitBreaker
-                  args:
-                    name: paymentCircuitBreaker
-                    fallbackUri: forward:/paymentFallBack
-
             - id: order-service
               uri: lb://ORDER-SERVICE
               predicates:
@@ -30,8 +19,8 @@ spring:
                     name: orderCircuitBreaker
                     fallbackUri: forward:/orderFallBack
 
-            - id: identity-service
-              uri: lb://IDENTITY-SERVICE
+            - id: auth-service
+              uri: lb://AUTH-SERVICE
               predicates:
                 - Path=/api/v1/auth/**
               filters:
@@ -52,7 +41,7 @@ spring:
                     name: productCircuitBreaker
                     fallbackUri: forward:/productFallBack
 
-            - id: product-service
+            - id: inventory-service
               uri: lb://INVENTORY-SERVICE
               predicates:
                 - Path=/api/v1/inventories/**
@@ -60,7 +49,7 @@ spring:
                 - name: Authentication
                 - name: CircuitBreaker
                   args:
-                    name: productCircuitBreaker
+                    name: inventoryCircuitBreaker
                     fallbackUri: forward:/inventoryFallBack
 
 server:
@@ -68,13 +57,13 @@ server:
 
 auth:
   service:
-    url: http://IDENTITY-SERVICE
+    url: http://AUTH-SERVICE
 
 management:
   endpoints:
     web:
       exposure:
-        include: hystrix.stream, health, info
+        include: metrics, health, info
 
 resilience4j:
   circuitbreaker:

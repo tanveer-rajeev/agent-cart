@@ -8,6 +8,7 @@ import com.tanveer.authservice.infrastructure.dto.SignUpRequestDto;
 import com.tanveer.authservice.infrastructure.dto.UserResponseDTO;
 import com.tanveer.authservice.infrastructure.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,32 +21,33 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Auth", description = "Auth management APIs")
 public class AuthController {
 
     private final UserUseCase userUseCase;
     private final AuthUseCase authUseCase;
 
-    @Operation(summary = "Signup for new user")
+    @Operation(summary = "Signup for new user",description = "Accepts a sign up request and creates a new user")
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto)
             throws CustomException {
         return ResponseEntity.status(201).body(userUseCase.saveUser(signUpRequestDto));
     }
 
-    @Operation(summary = "Get user by email")
+    @Operation(summary = "Get user by email",description = "Retrieve an user by email")
     @GetMapping("/getUser/{email}")
     public ResponseEntity<UserResponseDTO> getUserIdByEmail(@PathVariable String email) throws CustomException {
         return ResponseEntity.ok().body(userUseCase.getUserByEmail(email));
     }
 
-    @Operation(summary = "Generate token on user login")
+    @Operation(summary = "Login user",description = "Authenticate user and return JWT token")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO)
             throws CustomException {
         return ResponseEntity.ok(authUseCase.authenticate(loginRequestDTO));
     }
 
-    @Operation(summary = "Validate jwt token")
+    @Operation(summary = "Validate jwt token",description = "Validates a given JWT token")
     @GetMapping("/validate")
     public ResponseEntity<HttpStatus> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token)
             throws CustomException {
