@@ -123,7 +123,8 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
   consumer:
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-  
+  listener:
+    ack-mode: manual_immediate
     group-id: inventory-group
     enable-auto-commit: false 
     auto-offset-reset: earliest             
