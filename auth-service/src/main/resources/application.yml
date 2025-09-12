@@ -7,25 +7,22 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8888"
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/auth-service
-    username: root
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/auth-service
+    username: postgres
     password: root
   jpa:
     hibernate:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
 security:
   jwt:
     secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-    expiration: 86400000 # 1 day
+    expiration: 86400000
     refresh-token:
-      expiration: 604800000 # 7 days
+      expiration: 604800000
 
   customCipherConfig:
     encoder:

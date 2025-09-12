@@ -39,7 +39,7 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Outbox + scheduler pattern for reliable event publishing
 
-- JPA/Hibernate with MySQL (one database per service)
+- JPA/Hibernate with PostgresSQL (one database per service)
 
 - JUnit 5, Mockito, AssertJ
 

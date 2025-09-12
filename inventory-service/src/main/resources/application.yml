@@ -7,18 +7,15 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8888"
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/inventory-service
-    username: root
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/inventory-service
+    username: postgres
     password: root
   jpa:
     hibernate:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
   kafka:
     bootstrap-servers: localhost:9092
