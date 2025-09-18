@@ -1,6 +1,7 @@
 package com.tanveer.authservice.domain;
 
 import com.tanveer.authservice.infrastructure.exception.CustomException;
+import com.tanveer.authservice.infrastructure.exception.ResourceConflictException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,7 +44,7 @@ class UserServiceImplUnitTest {
     }
 
     @Test
-    void saveUser_validUser_saveAndReturnUser() throws CustomException {
+    void saveUser_validUser_saveAndReturnUser() {
         User expected = new User("1", "test@gmail.com", "123", "ADMIN");
         User actual = userService.saveUser(expected);
 
@@ -57,9 +58,9 @@ class UserServiceImplUnitTest {
     void saveUser_invalidUser_throwCustomException() throws CustomException {
         User expected = new User("1", "test@gmail.com", "123", "ADMIN");
 
-        when(userRepository.save(expected)).thenThrow(new CustomException("DB error"));
+        when(userRepository.save(expected)).thenThrow(new ResourceConflictException("DB error"));
 
-        assertThrows(CustomException.class, () -> userService.saveUser(expected));
+        assertThrows(ResourceConflictException.class, () -> userService.saveUser(expected));
 
         verify(userRepository).save(expected);
     }

@@ -45,7 +45,46 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Docker
 
-# Service overview
+# How to Run
+
+## Prerequisites
+- Java 21+
+- Maven 3.9+
+- Docker
+- Kafka (if running without Docker, install and start locally)
+
+## Run Locally (without Docker)
+- Clone the repository:
+    ```bash
+    git clone https://github.com/tanveer-rajeev/agent-cart.git
+    cd agent-cart
+    ```
+
+## Start supporting services:
+
+- Start Kafka on localhost:9092
+
+- Start Postgres for each service (or update application.yml with your DB credentials)
+
+    - Run each service:
+      ```bash
+      cd <service-name>
+      mvn spring-boot:run
+      ```
+    - Or package and run the JAR:
+      ```bash
+      mvn clean package
+      java -jar target/<service-name>-0.0.1-SNAPSHOT.jar
+      ```
+    - By default:
+
+      - Eureka Server → http://localhost:8761
+
+      - Config Server → http://localhost:8888
+
+      - API Gateway → http://localhost:8989
+      
+# Service & API overview
 
 ## service-registry
 
@@ -54,7 +93,12 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 - Allows services to register themselves and discover other services dynamically.
 
 ## cloud-config-server
-
+- ***Configuration***
+    ```
+    spring:
+      config:
+        import: "optional:configserver:http://localhost:8888"
+    ```
 - Centralized configuration management for all microservices.
 
 - Stores common configuration in GitHub.
@@ -62,7 +106,27 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 - Each service reads the configuration from the config server.
 
 ## api-gateway
-
+- ***Configuration***
+    ```
+      spring:
+        application:
+          name: GATEWAY-SERVICE
+        cloud:
+         gateway:
+           server:
+             webflux:
+               routes:
+                 - id: order-service
+                   uri: lb://ORDER-SERVICE
+                   predicates:
+                     - Path=/api/v1/orders/**
+                   filters:
+                     - name: Authentication
+                     - name: CircuitBreaker
+                       args:
+                         name: orderCircuitBreaker
+                         fallbackUri: forward:/orderFallBack
+    ```
 - Acts as a single entry point for client requests.
 
 - Handles routing, JWT Authentication, and forwards requests to the appropriate service.
@@ -71,9 +135,72 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - JWT-based authentication and token validation
 
-- Endpoints: /auth/v1/register, /auth/v1/login, /auth/v1/validate
+### SignUP
+- **Signup Endpoint**: `POST http://localhost:8989/api/v1/auth/signup`
+   - ***Request Body***
+     ```json
+     {
+        "name": "user",
+        "email": "user@example.com",
+        "password": "Password123"
+     }
+     ```
+         
+  - ***Response***
+
+    ```json
+    {
+        "id": "123",
+        "name": "user",
+        "email": "user@example.com",
+        "createdAt": "2025-09-18T12:34:56"
+    }
+    ```
+### Login
+- **Endpoint**: `POST http://localhost:8989/api/v1/auth/login` 
+    - ***Request Body***
+      ```json
+      {
+        "email": "user@example.com",
+        "password": "Password123"
+      }
+      ```
+    - ***Response***
+    ```json
+    {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+    }
+    ```
+## API Documentation
+
+Interactive API documentation is available via Swagger UI:
+
+[Auth Service Open API Docs](http://localhost:9090/swagger-ui/index.html)
 
 ## product-service
+### Add Product
+- ***Endpoint***: `POST http://localhost:8989/api/v1/products`
+  - ***Request Body***
+    ```json
+    {
+        "name":"iPhone 8",
+        "description":"manufacture by iPhone 8",
+        "sku": "MOB-IPHONE-8",
+        "price": 80000
+    }
+    ```
+
+  - ***Response***
+    ```json
+    {
+        "id": "35646ac3-a642-4ccb-bfd2-27daf951ca38",
+        "sku": "MOB-IPHONE-8",
+        "name": "iPhone 8",
+        "description": "manufacture by iPhone 8",
+        "price": 80000
+    }
+    ```
 
 - Owns product catalog (name, price, SKU)
 
@@ -81,8 +208,75 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Exposes CRUD APIs for products
 
-## inventory-service
+## API Documentation
 
+Interactive API documentation is available via Swagger UI:
+
+[Product Service Open API Docs](http://localhost:9091/swagger-ui/index.html)
+
+### Inventory API
+
+#### Adjust Inventory
+- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/adjust/{sku}/{quantity}`
+
+  - **Request Body**:
+  ```json
+  {
+      "sku": "MOB-IPHONE-14",
+      "availableQty": 7,
+      "reserveQty": 0
+  }
+  ```
+
+#### Reserve Inventory
+- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/reverse/MOB-IPHONE14/2`
+
+  - **Request Body**:
+    ```json
+    {
+        "sku": "MOB-IPHONE-14",
+        "availableQty": 7,
+        "reserveQty": 2
+    }
+    ```
+
+#### Check Product Availability
+- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/availability`
+    - ***Request Body***
+      ```json
+      {
+          "orderItemList":[
+              {
+                  "sku":"MOB-IPHONE-8",
+                  "quantity":3
+              },
+              {
+                  "sku":"MOB-IPHONE-14",
+                  "quantity":2
+              }
+          ]
+      }
+      ```
+    - ***Response*** 
+      ```json
+      {
+          "itemAvailabilityDto":[
+              {
+                  "sku": "MOB-IPHONE-8",
+                  "requestedQty": 3,
+                  "availableQty": 15,
+                  "isAvailable": true
+              },
+              {
+                  "sku": "MOB-IPHONE-14",
+                  "requestedQty": 2,
+                  "availableQty": 7,
+                  "isAvailable": true
+              }
+          ]
+      }
+      ```
+      
 - Tracks stock levels per SKU
 
 - Consumes inventory.created an event to create an initial stock record, which is 0 at first entry.
@@ -91,8 +285,39 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Consumes order.placed and produces inventory.reserved or inventory.release event.
 
-## order-service
+## API Documentation
 
+Interactive API documentation is available via Swagger UI:
+
+[Inventory Service Open API Docs](http://localhost:9093/swagger-ui/index.html)
+
+## order-service
+### Place Order
+- ***EndPoint***: `POST http://localhost:8989/api/v1/inventories/orders`
+    - ***Request Body***
+    ```json
+        {
+          "customerId": "1a0eb5b7-3ad4-4b37-86c6-e5c578e4a2c0",
+          "items":[
+            {
+              "productId":"4dde7f7b-7a98-4a03-9a4f-ab051609b3f5",
+              "name":"iPhone 8",
+              "price":80000,
+              "sku":"MOB-iPHONE-8",
+              "quantity":5
+            }
+          ]
+        }  
+    ```
+  
+    - ***Response***
+    ```json
+        {
+            "orderId": "47b5cfe1-bc84-40eb-b607-645bb860195f",
+            "status": "ORDER_PLACED",
+            "totalPrice": 80000
+        }
+    ```
 - Accepts orders and manages order state
 
 - Emits outbox events for order.placed
@@ -101,6 +326,11 @@ A small, production-style e‑commerce system built with Spring Boot, Spring Clo
 
 - Implements a circuit breaker (Resilience4j) to gracefully handle failures during order processing, triggering a fallback that marks the order as pending or canceled, and uses the Outbox pattern to reliably schedule and publish the corresponding order events.
 
+## API Documentation
+
+Interactive API documentation is available via Swagger UI:
+
+[Order Service Open API Docs](http://localhost:9094/swagger-ui/index.html)
 
 # Scalability & Event-Driven Design
 

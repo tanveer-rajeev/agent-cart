@@ -1,6 +1,9 @@
 version: '3.9'
 
 services:
+  # ========================
+  # Infrastructure Services
+  # ========================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
@@ -29,9 +32,9 @@ services:
   postgres-auth:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: auth-service
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: auth_db
     ports:
       - "5433:5432"
     volumes:
@@ -40,9 +43,9 @@ services:
   postgres-product:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: product-service
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: product_pass
+      POSTGRES_DB: product_db
     ports:
       - "5434:5432"
     volumes:
@@ -51,9 +54,9 @@ services:
   postgres-inventory:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: inventory-service
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: inventory_pass
+      POSTGRES_DB: inventory_db
     ports:
       - "5435:5432"
     volumes:
@@ -62,9 +65,9 @@ services:
   postgres-order:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: order-service
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+      POSTGRES_DB: order_db
     ports:
       - "5436:5432"
     volumes:
@@ -103,9 +106,9 @@ services:
       - service-registry
       - config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth_pass
 
   product-service:
     build: ./product-service
@@ -117,9 +120,9 @@ services:
       - service-registry
       - config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product_db
+      SPRING_DATASOURCE_USERNAME: product_user
+      SPRING_DATASOURCE_PASSWORD: product_pass
 
   inventory-service:
     build: ./inventory-service
@@ -131,9 +134,9 @@ services:
       - service-registry
       - config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory_db
+      SPRING_DATASOURCE_USERNAME: inventory_user
+      SPRING_DATASOURCE_PASSWORD: inventory_pass
 
   order-service:
     build: ./order-service
@@ -145,9 +148,9 @@ services:
       - service-registry
       - config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order_db
+      SPRING_DATASOURCE_USERNAME: order_user
+      SPRING_DATASOURCE_PASSWORD: order_pass
 
 volumes:
   postgres_auth_data:

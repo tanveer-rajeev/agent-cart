@@ -1,7 +1,10 @@
 package com.tanveer.authservice.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tanveer.authservice.domain.UserRepository;
 import com.tanveer.authservice.infrastructure.dto.SignUpRequestDto;
+import com.tanveer.authservice.infrastructure.persistance.UserJpaRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +28,19 @@ class AuthControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserJpaRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
+
     @Test
     void createUser_ValidRequest_Returns201() throws Exception {
         var request = new SignUpRequestDto("test@gmail.com", "123", "ADMIN");
 
-        mockMvc.perform(post(BASE_URL+"/signup")
+        mockMvc.perform(post(BASE_URL + "/signup")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -41,12 +52,12 @@ class AuthControllerIntegrationTest {
     void createUser_DuplicateEmail_Returns409() throws Exception {
         var request = new SignUpRequestDto("test@gmail.com", "123", "ADMIN");
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post(BASE_URL + "/signup")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post(BASE_URL + "/signup")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
@@ -57,7 +68,7 @@ class AuthControllerIntegrationTest {
     void createUser_MissingFields_Returns400() throws Exception {
         var request = new SignUpRequestDto("", "123", "");
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post(BASE_URL + "/signup")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON))
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
