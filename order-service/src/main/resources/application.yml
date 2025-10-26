@@ -1,156 +1,59 @@
-version: '3.9'
+application:
+  services:
+    inventory:
+      url: http://localhost:9093/api/v1/inventories
+server:
+  port: 9094
 
-services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
+spring:
+  application:
+    name: order-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/order-service
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-  # ========================
-  # Databases (one per service)
-  # ========================
-  postgres-auth:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: auth-service
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_auth_data:/var/lib/postgresql/data
+      acks: all
+      retries: 2147483647
+      properties:
+          enable.idempotence: true
+          max.in.flight.requests.per.connection: 5
+          compression.type: zstd
+          linger.ms: 50
+          batch.size: 65536
 
-  postgres-product:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: product-service
-    ports:
-      - "5434:5432"
-    volumes:
-      - postgres_product_data:/var/lib/postgresql/data
+topic:
+  map:
+    PRODUCT_CREATED: product-created
+    PRODUCT_UPDATED: product-updated
 
-  postgres-inventory:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: inventory-service
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres_inventory_data:/var/lib/postgresql/data
+logging:
+  level:
+    root: INFO
+    com.tanveer.product-service: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
 
-  postgres-order:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: order-service
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres_order_data:/var/lib/postgresql/data
 
-  # ========================
-  # Microservices
-  # ========================
-  service-registry:
-    build: ./service-registry
-    ports:
-      - "8761:8761"
-
-  config-server:
-    build: ./config-server
-    ports:
-      - "8888:8888"
-    depends_on:
-      - service-registry
-
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - "8989:8989"
-    depends_on:
-      - service-registry
-      - config-server
-
-  auth-service:
-    build: ./auth-service
-    ports:
-      - "9090:9090"
-    depends_on:
-      - postgres-auth
-      - kafka
-      - service-registry
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-
-  product-service:
-    build: ./product-service
-    ports:
-      - "9091:9091"
-    depends_on:
-      - postgres-product
-      - kafka
-      - service-registry
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-
-  inventory-service:
-    build: ./inventory-service
-    ports:
-      - "9093:9093"
-    depends_on:
-      - postgres-inventory
-      - kafka
-      - service-registry
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-
-  order-service:
-    build: ./order-service
-    ports:
-      - "9094:9094"
-    depends_on:
-      - postgres-order
-      - kafka
-      - service-registry
-      - config-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order-service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-
-volumes:
-  postgres_auth_data:
-  postgres_product_data:
-  postgres_inventory_data:
-  postgres_order_data:
+resilience4j.circuitbreaker:
+  instances:
+    inventoryService:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 5s
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
