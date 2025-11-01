@@ -1,6 +1,13 @@
 # Agent-cart
 
-A small, production-style e‑commerce system built with Spring Boot, Spring Cloud, and Apache Kafka. It follows Domain-Driven Design and Hexagonal architecture with clear bounded contexts and event-driven communication.
+A small, production-style e‑commerce system built with Spring Boot, Spring Cloud, and Apache Kafka. 
+It follows Domain-Driven Design and Hexagonal architecture with clear bounded contexts and event-driven communication.
+Using RAG(Retrieval-Augmented Generation) Architecture the agent-cart provides AI-Powered Product Search & Recommendations  
+using Spring-AI, ollama and vector database. 
+
+
+## High-level Design
+![img.png](img.png)
 
 # Highlights
 
@@ -332,6 +339,49 @@ Interactive API documentation is available via Swagger UI:
 
 [Order Service Open API Docs](http://localhost:9094/swagger-ui/index.html)
 
+## agent
+### Search Product
+- ***EndPoint***: `GET http://localhost:8989/api/v1/agent/search?query=give_me_the_AI_feature_phone_list`
+  -  ***Response***
+  ```json
+      [
+      {
+        "id": "0c1327c7-058b-4395-b687-89be684ca957",
+        "text": "Product Information: The product 'IPhone 17' is a MOB item . Description: manufacture by IPhone with AI feature. It is priced at 124000.0 USD. Created on 2025-11-01T08:23:32.002044600Z.",
+        "metadata": {
+            "entity_type": "Inventory",
+            "event": "inventory-adjust",
+            "distance": 0.4828494        
+        }
+      },
+      {
+        "id": "d730624b-c8fa-453a-a3ee-ef85b52d0ae7",
+        "text": "Product Information: The product 'IPhone 11' is a MOB item . Description: manufacture by IPhone with AI feature, best display. It is priced at 124000.0 USD. Created on 2025-11-01T08:21:37.207281400Z.",
+        "metadata": {
+            "entity_type": "Inventory",
+            "event": "inventory-adjust",
+            "distance": 0.48921254        
+        }
+      }]
+  ```
+- ***EndPoint***: `POST http://localhost:8989/api/v1/agent/chat`
+  - ***Request Body***
+  ```
+  Prompt -> Give me best AI feature phone list
+  ```
+
+  - ***Response***
+     ```
+     Based on the provided context, all the listed feature phones are manufactured by either 
+     Apple (iPhone 11, iPhone 13, and iPhone 17) or Samsung (Samsung FE). All these devices include AI features.
+    ```
+
+- This Agent service consumes inventory events.
+- Product data stored in pgvector (vector embeddings of inventory items)
+- Vector similarity search when user queries/chat or when recommending similar products.
+- Retrieved products (top-K similar vectors) are sent as context to Ollama.
+- Ollama model (e.g., Mistral) generates the answer, recommendation, or search result summary.
+
 # Scalability & Event-Driven Design
 
  ## Kafka Configuration
@@ -363,7 +413,9 @@ Interactive API documentation is available via Swagger UI:
 ```
 
 
-**This system is designed with Kafka-based event streaming to ensure horizontal scalability and high throughput. The architecture supports processing millions of events per day by leveraging the following practices:**
+
+**This system is designed with Kafka-based event streaming to ensure horizontal scalability and high throughput. 
+The architecture supports processing millions of events per day by leveraging the following practices:**
 
 - Partitioned Topics
 
@@ -403,21 +455,10 @@ Interactive API documentation is available via Swagger UI:
 
   - Scale Kafka brokers if needed (cluster supports partition distribution).
 
-
-## Sample of Outbox Pattern flow
+    
+## Outbox Pattern flow
 
 <img width="1218" height="569" alt="Screenshot 2025-09-06 114545" src="https://github.com/user-attachments/assets/36cd02ad-945a-4007-b256-0ef27c186b6d" />
-
-
-
-## High-level Design & Future Improvement Plan
-
-- AI Integration – Planned integration of Spring AI or LangChain4j with Ollama to implement an agent-driven shopping cart. (In progress)
-  
-- Payment & Notification Services – Development is pending and will be completed in upcoming iterations.
-
-  
-<img width="1364" height="807" alt="high level desgin" src="https://github.com/user-attachments/assets/a05f0056-6a0a-42e9-b1e6-4b779a2e734a" />
 
 
 
