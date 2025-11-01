@@ -5,8 +5,8 @@ import com.tanveer.commonlib.domain.DomainEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public record InventoryEvent(String aggregateId, String productId, String sku, int quantity, EventType eventType,
-                             Instant occurredAt) implements DomainEvent {
+public record InventoryEvent(String aggregateId, String productId, String name, String description,
+                             double price, String sku, int quantity, EventType eventType, Instant occurredAt) implements DomainEvent {
 
     private static final String AGGREGATE_TYPE = "Inventory";
 

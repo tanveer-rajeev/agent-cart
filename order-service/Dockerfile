@@ -1,7 +1,7 @@
 # ===== COMMON LIB BUILD STAGE =====
 FROM maven:3.9.4-eclipse-temurin-17 AS common-lib-builder
-WORKDIR /app/common-lib
-COPY ../common-lib /app/common-lib
+WORKDIR /build/common-lib
+COPY ../common-lib /build/common-lib
 RUN mvn clean install -DskipTests
 
 # ===== PRODUCT SERVICE BUILD STAGE =====
@@ -22,7 +22,7 @@ FROM openjdk:21-jdk AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/product-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder ./app/target/order-service-0.0.1-SNAPSHOT.jar ./app.jar
 
 EXPOSE 4005
 

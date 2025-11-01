@@ -21,6 +21,9 @@ public class ProductEventMapper {
     payloadMap.put("aggregateType", event.getAggregateType());
     payloadMap.put("aggregateId", event.getAggregateId());
     payloadMap.put("eventType", event.getEventType());
+    payloadMap.put("name", event.name());
+    payloadMap.put("description", event.description());
+    payloadMap.put("price", event.price());
     payloadMap.put("sku", event.getSku());
     payloadMap.put("occurredAt", event.getOccurredAt() != null ? event.getOccurredAt().toString() : null);
     try {

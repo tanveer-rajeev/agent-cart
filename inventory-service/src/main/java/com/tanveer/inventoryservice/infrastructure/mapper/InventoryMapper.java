@@ -10,6 +10,9 @@ public class InventoryMapper {
     public static InventoryEntity domainToEntity(Inventory domain) {
         return InventoryEntity.builder()
                 .id(domain.getId())
+                .name(domain.getName())
+                .description(domain.getDescription())
+                .price(domain.getPrice())
                 .sku(domain.getSku())
                 .availableQty(domain.getAvailableQty())
                 .reservedQty(domain.getReservedQty())
@@ -22,6 +25,9 @@ public class InventoryMapper {
         return Inventory.rehydrate(
                 entity.getId(),
                 entity.getProductId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getPrice(),
                 entity.getSku(),
                 entity.getAvailableQty(),
                 entity.getReservedQty(),
@@ -39,6 +45,9 @@ public class InventoryMapper {
 
     public static Inventory dtoToDomain(InventoryRequestDto request) {
         return Inventory.create(request.productId(),
+                request.name(),
+                request.description(),
+                request.price(),
                 request.sku(),
                 request.availableQty(),
                 request.reserveQty(),

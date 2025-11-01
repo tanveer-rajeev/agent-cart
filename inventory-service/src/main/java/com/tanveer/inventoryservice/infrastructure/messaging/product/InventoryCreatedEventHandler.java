@@ -8,10 +8,12 @@ import com.tanveer.inventoryservice.infrastructure.exception.InventoryException;
 import com.tanveer.inventoryservice.infrastructure.mapper.InventoryMapper;
 import com.tanveer.inventoryservice.infrastructure.messaging.EventHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class InventoryCreatedEventHandler implements EventHandler<ProductEventDto> {
 
     private final InventoryService inventoryService;
@@ -22,10 +24,12 @@ public class InventoryCreatedEventHandler implements EventHandler<ProductEventDt
     }
 
     @Override
-    public void handler(ProductEventDto event) throws InventoryException {
+    public void handler(ProductEventDto event) {
+        log.info("Product created event is : {}",event);
         inventoryService.createInventory(
                 InventoryMapper.dtoToDomain(
-                        new InventoryRequestDto(event.aggregateId(), event.sku(), 0, 0, 0)
+                        new InventoryRequestDto(event.aggregateId(), event.name(),event.description(),event.price(),
+                                event.sku(), 0, 0, 0)
                 )
         );
     }

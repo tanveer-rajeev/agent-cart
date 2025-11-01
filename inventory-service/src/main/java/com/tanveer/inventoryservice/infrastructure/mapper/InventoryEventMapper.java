@@ -21,6 +21,10 @@ public class InventoryEventMapper {
         payloadMap.put("aggregateId", event.getAggregateId());
         payloadMap.put("productId", event.getProductId());
         payloadMap.put("eventType", event.getEventType());
+        payloadMap.put("name", event.name());
+        payloadMap.put("description", event.description());
+        payloadMap.put("price", event.price());
+        payloadMap.put("quantity", event.quantity());
         payloadMap.put("sku", event.getSku());
         payloadMap.put("occurredAt", event.getOccurredAt() != null ? event.getOccurredAt().toString() : null);
 

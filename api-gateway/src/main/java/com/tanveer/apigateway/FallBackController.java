@@ -32,4 +32,9 @@ public class FallBackController {
         return Mono.just("Inventory service taking too long to respond or is down.Please try again later");
     }
 
+    @RequestMapping("/agentFallBack")
+    public Mono<String> AgentServiceFallBack(){
+        return Mono.just("Agent taking too long to respond or is down.Please try again later");
+    }
+
 }

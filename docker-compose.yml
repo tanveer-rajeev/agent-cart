@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   # ========================
-  # Infrastructure Services
+  # Infrastructure
   # ========================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -27,14 +27,14 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   # ========================
-  # Databases (one per service)
+  # Databases
   # ========================
   postgres-auth:
     image: postgres:15
     environment:
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_pass
-      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: auth-service
     ports:
       - "5433:5432"
     volumes:
@@ -43,9 +43,9 @@ services:
   postgres-product:
     image: postgres:15
     environment:
-      POSTGRES_USER: product_user
-      POSTGRES_PASSWORD: product_pass
-      POSTGRES_DB: product_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: product-service
     ports:
       - "5434:5432"
     volumes:
@@ -54,9 +54,9 @@ services:
   postgres-inventory:
     image: postgres:15
     environment:
-      POSTGRES_USER: inventory_user
-      POSTGRES_PASSWORD: inventory_pass
-      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: inventory-service
     ports:
       - "5435:5432"
     volumes:
@@ -65,13 +65,36 @@ services:
   postgres-order:
     image: postgres:15
     environment:
-      POSTGRES_USER: order_user
-      POSTGRES_PASSWORD: order_pass
-      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: order-service
     ports:
       - "5436:5432"
     volumes:
       - postgres_order_data:/var/lib/postgresql/data
+
+  postgres-agent:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: agent
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_agent_data:/var/lib/postgresql/data
+
+  # ========================
+  # Common Library Build
+  # ========================
+  common-lib:
+    image: maven:3.9.9-eclipse-temurin-21
+    container_name: common-lib
+    working_dir: /app
+    volumes:
+      - ./common-lib:/app
+      - maven-repo:/root/.m2
+    command: mvn clean install -DskipTests
 
   # ========================
   # Microservices
@@ -81,8 +104,8 @@ services:
     ports:
       - "8761:8761"
 
-  config-server:
-    build: ./config-server
+  cloud-config-server:
+    build: ./cloud-config-server
     ports:
       - "8888:8888"
     depends_on:
@@ -94,7 +117,7 @@ services:
       - "8989:8989"
     depends_on:
       - service-registry
-      - config-server
+      - cloud-config-server
 
   auth-service:
     build: ./auth-service
@@ -104,56 +127,87 @@ services:
       - postgres-auth
       - kafka
       - service-registry
-      - config-server
+      - cloud-config-server
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
-      SPRING_DATASOURCE_USERNAME: auth_user
-      SPRING_DATASOURCE_PASSWORD: auth_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/auth-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
 
   product-service:
-    build: ./product-service
+    build:
+      context: .
+      dockerfile: ./product-service/Dockerfile
     ports:
       - "9091:9091"
+    volumes:
+      - maven-repo:/root/.m2
     depends_on:
       - postgres-product
       - kafka
       - service-registry
-      - config-server
+      - cloud-config-server
+      - common-lib
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product_db
-      SPRING_DATASOURCE_USERNAME: product_user
-      SPRING_DATASOURCE_PASSWORD: product_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/product-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
 
   inventory-service:
-    build: ./inventory-service
-    ports:
-      - "9093:9093"
+    build:
+      context: .
+      dockerfile: ./inventory-service/Dockerfile
     depends_on:
-      - postgres-inventory
       - kafka
       - service-registry
-      - config-server
+      - cloud-config-server
+      - postgres-inventory
+      - common-lib
+    volumes:
+      - maven-repo:/root/.m2
+    ports:
+      - "9093:9093"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory_db
-      SPRING_DATASOURCE_USERNAME: inventory_user
-      SPRING_DATASOURCE_PASSWORD: inventory_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/inventory-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
 
   order-service:
-    build: ./order-service
+    build:
+      context: .
+      dockerfile: ./order-service/Dockerfile
     ports:
       - "9094:9094"
+    volumes:
+      - maven-repo:/root/.m2
     depends_on:
       - postgres-order
       - kafka
       - service-registry
-      - config-server
+      - cloud-config-server
+      - common-lib
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order_db
-      SPRING_DATASOURCE_USERNAME: order_user
-      SPRING_DATASOURCE_PASSWORD: order_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/order-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+
+  agent:
+    build: ./agent
+    ports:
+      - "9095:9095"
+    depends_on:
+      - postgres-agent
+      - kafka
+      - service-registry
+      - cloud-config-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/agent
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
 
 volumes:
   postgres_auth_data:
   postgres_product_data:
   postgres_inventory_data:
   postgres_order_data:
+  postgres_agent_data:
+  maven-repo:

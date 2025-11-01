@@ -27,7 +27,16 @@ public class InventoryEntity {
     @Column(name = "product_id", unique = true, nullable = false)
     private String productId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
+    private String name;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "SKU", unique = true, nullable = false)
     private String sku;
 
     @Column(name = "available_qty", nullable = false)

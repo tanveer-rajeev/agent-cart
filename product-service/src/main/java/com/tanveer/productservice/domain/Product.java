@@ -30,12 +30,12 @@ public final class Product {
         String id = UUID.randomUUID().toString();
         List<ProductEvent> events = new ArrayList<>();
 
-        events.add(new ProductEvent(id, sku, EventType.PRODUCT_CREATED.value(), Instant.now()
+        events.add(new ProductEvent(id, name, description, price, sku, EventType.PRODUCT_CREATED.value(), Instant.now()
         ));
         return new Product(id, name, description, sku, price, events);
     }
 
-    public static Product rehydrate(String id, String name, String description, String sku, Long price){
+    public static Product rehydrate(String id, String name, String description, String sku, Long price) {
         return new Product(id, name, description, sku, price, List.of());
     }
 
