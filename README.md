@@ -1,9 +1,8 @@
 # Agent-cart
 
-A small, production-style e‑commerce system built with Spring Boot, Spring Cloud, and Apache Kafka. 
+A small, production-style event-driven e‑commerce system built with Spring Boot, Spring Cloud, and Apache Kafka. 
 It follows Domain-Driven Design and Hexagonal architecture with clear bounded contexts and event-driven communication.
-Using RAG(Retrieval-Augmented Generation) Architecture the agent-cart provides AI-Powered Product Search & Recommendations  
-using Spring-AI, ollama and vector database. 
+Using RAG(Retrieval-Augmented Generation) Architecture, the agent-cart provides AI-Powered Product Search & Recommendations using Spring-AI, ollama, and vector database. 
 
 
 ## High-level Design
@@ -11,7 +10,7 @@ using Spring-AI, ollama and vector database.
 
 # Highlights
 
-- Services: service-registry, config-server, api-gateway, auth-service, product-service, inventory-service, order-service
+- Services: service-registry, config-server, api-gateway, auth-service, product-service, inventory-service, order-service, agent
 
 - Spring Cloud: Eureka discovery, Config Server, Gateway routing, circuit breaker
 
