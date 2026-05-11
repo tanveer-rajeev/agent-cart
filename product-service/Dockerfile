@@ -1,29 +1,21 @@
-# ===== COMMON LIB BUILD STAGE =====
-FROM maven:3.9.4-eclipse-temurin-17 AS common-lib-builder
-WORKDIR /app/common-lib
-COPY ../common-lib /app/common-lib
-RUN mvn clean install -DskipTests
-
-# ===== PRODUCT SERVICE BUILD STAGE =====
+# ===== BUILD STAGE =====
 FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
-WORKDIR /app
+WORKDIR /build
 
-COPY pom.xml .
+# Copy both modules
+COPY common-lib ./common-lib
+COPY product-service ./product-service
 
-RUN mvn dependency:go-offline -B
-
-COPY . .
-COPY --from=common-lib-builder /root/.m2 /root/.m2
-RUN mvn clean package
+RUN --mount=type=cache,target=/root/.m2 mvn -f common-lib/pom.xml clean install -DskipTests
+RUN --mount=type=cache,target=/root/.m2 mvn -f product-service/pom.xml clean package -DskipTests
 
 # ===== RUN STAGE =====
-FROM openjdk:21-jdk AS runner
+FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/product-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder /build/product-service/target/product-service-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 4005
-
+EXPOSE 9091
 ENTRYPOINT ["java", "-jar", "app.jar"]

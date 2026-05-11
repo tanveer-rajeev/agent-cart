@@ -57,16 +57,6 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Inventory createInventory(Inventory inventory) {
         log.info("Mapper to inventory domain {}",inventory.getDescription());
-//        inventory = Inventory.create(
-//                inventory.getProductId(),
-//                inventory.getName(),
-//                inventory.getDescription(),
-//                inventory.getPrice(),
-//                inventory.getSku(),
-//                inventory.getAvailableQty(),
-//                inventory.getReservedQty(),
-//                inventory.getVersion()
-//        );
         inventoryRepository.save(inventory);
         saveEvents(inventory);
         return inventory;

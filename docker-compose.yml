@@ -1,11 +1,9 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  # ========================
-  # Infrastructure
-  # ========================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -14,6 +12,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     depends_on:
       - zookeeper
     ports:
@@ -21,9 +20,16 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      # 🔥 REQUIRED (you missed this)
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+
+      # 🔥 dual access (docker + host)
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   # ========================
@@ -85,31 +91,23 @@ services:
       - postgres_agent_data:/var/lib/postgresql/data
 
   # ========================
-  # Common Library Build
-  # ========================
-  common-lib:
-    image: maven:3.9.9-eclipse-temurin-21
-    container_name: common-lib
-    working_dir: /app
-    volumes:
-      - ./common-lib:/app
-      - maven-repo:/root/.m2
-    command: mvn clean install -DskipTests
-
-  # ========================
   # Microservices
   # ========================
   service-registry:
     build: ./service-registry
     ports:
       - "8761:8761"
+#    restart: on-failure
 
   cloud-config-server:
     build: ./cloud-config-server
     ports:
       - "8888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - service-registry
+#    restart: on-failure
 
   api-gateway:
     build: ./api-gateway
@@ -118,6 +116,7 @@ services:
     depends_on:
       - service-registry
       - cloud-config-server
+#    restart: on-failure
 
   auth-service:
     build: ./auth-service
@@ -128,8 +127,9 @@ services:
       - kafka
       - service-registry
       - cloud-config-server
+#    restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/auth-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth-service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -139,16 +139,14 @@ services:
       dockerfile: ./product-service/Dockerfile
     ports:
       - "9091:9091"
-    volumes:
-      - maven-repo:/root/.m2
     depends_on:
       - postgres-product
       - kafka
       - service-registry
       - cloud-config-server
-      - common-lib
+#    restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/product-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/product-service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -156,18 +154,16 @@ services:
     build:
       context: .
       dockerfile: ./inventory-service/Dockerfile
+    ports:
+      - "9093:9093"
     depends_on:
+      - postgres-inventory
       - kafka
       - service-registry
       - cloud-config-server
-      - postgres-inventory
-      - common-lib
-    volumes:
-      - maven-repo:/root/.m2
-    ports:
-      - "9093:9093"
+#    restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/inventory-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory-service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -177,16 +173,14 @@ services:
       dockerfile: ./order-service/Dockerfile
     ports:
       - "9094:9094"
-    volumes:
-      - maven-repo:/root/.m2
     depends_on:
       - postgres-order
       - kafka
       - service-registry
       - cloud-config-server
-      - common-lib
+#    restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/order-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/order-service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -199,15 +193,18 @@ services:
       - kafka
       - service-registry
       - cloud-config-server
+#    restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/agent
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-agent:5432/agent
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
+# ========================
+# Volumes
+# ========================
 volumes:
   postgres_auth_data:
   postgres_product_data:
   postgres_inventory_data:
   postgres_order_data:
   postgres_agent_data:
-  maven-repo:
