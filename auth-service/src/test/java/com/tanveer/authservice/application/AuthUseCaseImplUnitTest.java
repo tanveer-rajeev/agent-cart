@@ -97,10 +97,10 @@ class AuthUseCaseImplUnitTest {
 
     @Test
     void validateToken() throws CustomException {
-        String token = "valid-token";
+        String token = "Bearer valid-token";
 
         authUseCase.validateToken(token);
 
-        verify(jwtUtil).validateToken(token);
+        verify(jwtUtil).validateToken(token.substring(7));
     }
 }

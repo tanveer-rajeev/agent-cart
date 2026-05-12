@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Clock;
+
 @Configuration
 public class ApplicationConfig {
 
@@ -37,5 +39,10 @@ public class ApplicationConfig {
     @Bean
     public UserService authService(UserRepository userRepository) {
         return new UserServiceImpl(userRepository);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
     }
 }

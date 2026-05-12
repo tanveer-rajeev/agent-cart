@@ -89,7 +89,7 @@ class AuthControllerUnitTest {
 
     @Test
     void validateToken() throws CustomException {
-        String token = "valid-token";
+        String token = "Bearer valid-token";
 
         ResponseEntity<HttpStatus> actual = authController.validateToken(token);
 

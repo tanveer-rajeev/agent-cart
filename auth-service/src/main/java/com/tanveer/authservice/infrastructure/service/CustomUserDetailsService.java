@@ -18,22 +18,22 @@ import java.util.Optional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private final UserJpaRepository userJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
-  @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    Optional<UserEntity> credential = userJpaRepository.findByEmail(email);
-    if (credential.isEmpty()) {
-      throw new UsernameNotFoundException("No user found by given email or phone number: " + email);
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<UserEntity> credential = userJpaRepository.findByEmail(email);
+        if (credential.isEmpty()) {
+            throw new UsernameNotFoundException("No user found by given email or phone number: " + email);
+        }
+        UserEntity userEntity = credential.get();
+        return new org.springframework.security.core.userdetails
+                .User(userEntity.getEmail(), userEntity.getPassword(), true,
+                true, true, true,
+                getGrantedAuthorities(userEntity.getRole()));
     }
-    UserEntity userEntity = credential.get();
-    return new org.springframework.security.core.userdetails
-      .User(userEntity.getEmail(), userEntity.getPassword(), true,
-      true, true, true,
-      getGrantedAuthorities(userEntity.getRole()));
-  }
 
-  private Collection<? extends GrantedAuthority> getGrantedAuthorities(String role) {
-    return List.of(new SimpleGrantedAuthority("ROLE_" + role));
-  }
+    private Collection<? extends GrantedAuthority> getGrantedAuthorities(String role) {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+    }
 }

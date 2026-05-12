@@ -13,23 +13,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
-  private final TokenJpaRepository tokenJpaRepository;
+    private final TokenJpaRepository tokenJpaRepository;
 
-  @Override
-  public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-    final String authHeader = request.getHeader("Authorization");
-    final String jwt;
-    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-      return;
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+
+        jwt = authHeader.substring(7);
+        tokenJpaRepository.findByToken(jwt).ifPresent(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+            tokenJpaRepository.save(token);
+            SecurityContextHolder.clearContext();
+        });
     }
-    jwt = authHeader.substring(7);
-    var storedToken = tokenJpaRepository.findByToken(jwt)
-        .orElse(null);
-    if (storedToken != null) {
-      storedToken.setExpired(true);
-      storedToken.setRevoked(true);
-      tokenJpaRepository.save(storedToken);
-      SecurityContextHolder.clearContext();
-    }
-  }
 }

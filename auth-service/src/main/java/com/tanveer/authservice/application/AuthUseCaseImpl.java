@@ -63,6 +63,9 @@ public class AuthUseCaseImpl implements AuthUseCase {
     @Override
     public void validateToken(String token) throws CustomException {
         log.info("Validated token");
-        jwtUtil.validateToken(token);
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new CustomException("Invalid JWT token");
+        }
+        jwtUtil.validateToken(token.substring(7));
     }
 }
