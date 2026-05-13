@@ -55,7 +55,7 @@ class UserServiceImplUnitTest {
     }
 
     @Test
-    void saveUser_invalidUser_throwCustomException() throws CustomException {
+    void saveUser_invalidUser_throwCustomException() {
         User expected = new User("1", "test@gmail.com", "123", "ADMIN");
 
         when(userRepository.save(expected)).thenThrow(new ResourceConflictException("DB error"));

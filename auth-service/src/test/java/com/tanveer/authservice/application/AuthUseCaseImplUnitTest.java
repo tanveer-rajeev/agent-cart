@@ -103,4 +103,15 @@ class AuthUseCaseImplUnitTest {
 
         verify(jwtUtil).validateToken(token.substring(7));
     }
+
+    @Test
+    void should_throw_exception_without_bearer_token() throws CustomException {
+        String invalidToken = "valid-token";
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> authUseCase.validateToken(invalidToken)
+        );
+
+        assertEquals("Invalid JWT token", ex.getMessage());
+    }
 }
