@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,26 +21,34 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(User user) {
         log.info("Saving into database {}", user);
-        isUserExist(user.getEmail());
+        if (userJpaRepository.findByEmail(user.getEmail()).isPresent()) {
+            log.error("Email {} already exist", user.getEmail());
+            throw new ResourceConflictException("Email already exist");
+        }
         return UserMapper.entityToDomain(userJpaRepository.save(UserMapper.domainToEntity(user)));
     }
 
     @Override
     public User update(User user, String id) {
-        isUserExist(user.getEmail());
-        return UserMapper.entityToDomain(userJpaRepository.saveAndFlush(UserMapper.domainToEntity(user)));
+
+        Optional<UserEntity> existingUser =
+                userJpaRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()
+                && !existingUser.get().getId().equals(id)) {
+            throw new ResourceConflictException("Email already exist");
+        }
+
+        return UserMapper.entityToDomain(
+                userJpaRepository.saveAndFlush(
+                        UserMapper.domainToEntity(user)
+                )
+        );
     }
 
     @Override
     public User findByEmail(String email) throws CustomException {
         return UserMapper.entityToDomain(userJpaRepository.findByEmail(email).stream().findFirst()
                 .orElseThrow(() -> new CustomException("user not found")));
-    }
-
-    private void isUserExist(String email) {
-        if (userJpaRepository.findByEmail(email).isPresent()) {
-            log.error("Email {} already exist", email);
-            throw new ResourceConflictException("Email already exist");
-        }
     }
 }
