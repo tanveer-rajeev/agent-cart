@@ -1,463 +1,367 @@
-# Agent-cart
+# Agent-Cart 🛒🤖
 
-A small, production-style event-driven e‑commerce system built with Spring Boot, Spring Cloud, and Apache Kafka. 
-It follows Domain-Driven Design and Hexagonal architecture with clear bounded contexts and event-driven communication.
-Using RAG(Retrieval-Augmented Generation) Architecture, the agent-cart provides AI-Powered Product Search & Recommendations using Spring-AI, ollama, and vector database. 
+A **production-style, event-driven e-commerce backend** built with Java 21, Spring Boot 3, and Apache Kafka —
+extended with an **AI-powered product search and recommendation engine** using Spring AI, RAG (Retrieval-Augmented Generation), and pgvector.
 
+> "Built to production standards — every architectural decision reflects patterns used in real enterprise systems, with tradeoffs documented below."
 
-## High-level Design
-![img.png](img.png)
+---
 
-# Highlights
+## Table of Contents
 
-- Services: service-registry, config-server, api-gateway, auth-service, product-service, inventory-service, order-service, agent
+- [Why This Architecture?](#why-this-architecture)
+- [High-Level Design](#high-level-design)
+- [Services Overview](#services-overview)
+- [AI Agent Service — Deep Dive](#ai-agent-service--deep-dive)
+- [Key Engineering Decisions & Tradeoffs](#key-engineering-decisions--tradeoffs)
+- [Tech Stack](#tech-stack)
+- [Testing Strategy](#testing-strategy)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [How to Run](#how-to-run)
+- [API Documentation](#api-documentation)
 
-- Spring Cloud: Eureka discovery, Config Server, Gateway routing, circuit breaker
+---
 
-- Kafka: asynchronous inter-service events, idempotent consumers
+## Why This Architecture?
 
-- Outbox pattern: product-service emits inventory. created events, order-service emits order.placed events; scheduled job delivers events reliably
+Most e-commerce tutorials show a monolith. I built this to answer a harder question:
 
-- DDD + Hexagonal: domain-centric code, adapters for api, persistence, and messaging
+> *"How do you design a system where services are independently deployable, failures are isolated, and data consistency is guaranteed — without distributed transactions?"*
 
-# Domain and package layout (Hexagonal)
-```text
+Three core problems drove every architectural decision:
+
+| Problem | Solution Chosen | Why |
+|---|---|---|
+| Services need to communicate without tight coupling | Kafka event streaming | Decouples producers from consumers; services can evolve independently |
+| A service crash must not lose published events | Outbox Pattern | Guarantees atomicity between DB write and event publication without 2-phase commit |
+| Users need intelligent product discovery, not just keyword search | RAG + Vector DB | Semantic similarity search understands intent, not just exact terms |
+
+---
+
+## High-Level Design
+
+![High-Level Architecture](img.png)
+
+**Request flow:**
+1. Client hits the **API Gateway** (single entry point, JWT-validated)
+2. Gateway routes to the appropriate service via Eureka service discovery
+3. Services communicate **asynchronously via Kafka** for state-changing events
+4. The **Agent service** handles all AI queries — independently, without touching order/inventory logic
+
+---
+
+## Services Overview
+
+| Service | Responsibility | Port |
+|---|---|---|
+| `service-registry` | Eureka — service discovery | 8761 |
+| `cloud-config-server` | Centralized config management (GitHub-backed) | 8888 |
+| `api-gateway` | Routing, JWT auth, circuit breaker | 8989 |
+| `auth-service` | Signup/login, JWT issuance & validation | 9090 |
+| `product-service` | Product catalog CRUD, emits `inventory.created` | 9091 |
+| `inventory-service` | Stock management, consumes/produces inventory events | 9093 |
+| `order-service` | Order placement, emits `order.placed`, handles saga compensation | 9094 |
+| `agent` | AI-powered semantic search & chat using RAG + pgvector | — |
+
+### Package Layout (Hexagonal Architecture)
+
+```
 <service-name>
-├─ src/main/java
-│ └─ com.tanveer.<service>
-│ ├─ domain # Entities, value objects, domain services, events
-│ ├─ application # Use cases, ports
-│ ├─ infrastructure
-│ │ ├─ api # REST controllers (inbound adapter)
-│ │ ├─ persistence # JPA repositories, mappings (outbound)
-│ │ └─ messaging # Kafka producers/consumers + outbox scheduler
-│ │ └─ config # Spring configuration
-│ 
-└─ src/main/resources
+└── src/main/java/com.tanveer.<service>
+    ├── domain/          # Entities, value objects, domain services, domain events
+    ├── application/     # Use cases (ports — inbound & outbound interfaces)
+    └── infrastructure/
+        ├── api/         # REST controllers (inbound adapter)
+        ├── persistence/ # JPA repositories, entity mappers (outbound adapter)
+        ├── messaging/   # Kafka producers, consumers, outbox scheduler
+        └── config/      # Spring configuration beans
 ```
 
-## Tech stack
-- Java 21, Spring Boot 3
+**Why Hexagonal?** The domain layer has zero dependencies on Spring, Kafka, or JPA. This means:
+- Business logic can be unit-tested without spinning up any infrastructure
+- The persistence layer can be swapped (e.g., PostgreSQL → MongoDB) without touching domain code
+- Inbound adapters (REST, Kafka consumer) are interchangeable
 
-- Spring Cloud 2025.0.0 (Eureka, Config Server, Gateway)
+---
 
-- Apache Kafka and Spring for Apache Kafka
+## AI Agent Service — Deep Dive
 
-- Outbox + scheduler pattern for reliable event publishing
+The `agent` service is the most distinctive part of this project. It provides two capabilities:
 
-- JPA/Hibernate with PostgresSQL (one database per service)
+### 1. Semantic Vector Search
 
-- JUnit 5, Mockito, AssertJ
+**Endpoint:** `GET /api/v1/agent/search?query=give_me_the_AI_feature_phone_list`
 
-- Docker
+Unlike a SQL `LIKE` query, this understands *intent*. A query for "AI feature phone" returns iPhones and Samsung FE — even if the product description never contains those exact words — because the vector embeddings capture semantic meaning.
 
-# How to Run
+**How it works:**
 
-## Prerequisites
-- Java 21+
-- Maven 3.9+
-- Docker
-- Kafka (if running without Docker, install and start locally)
+```
+User Query
+    │
+    ▼
+Embedding Model (Ollama) → Query Vector
+    │
+    ▼
+pgvector similarity search (cosine distance)
+    │
+    ▼
+Top-K most semantically similar product chunks
+    │
+    ▼
+Return ranked results with distance scores
+```
 
-## Run Locally (without Docker)
-- Clone the repository:
-    ```bash
-    git clone https://github.com/tanveer-rajeev/agent-cart.git
-    cd agent-cart
-    ```
-
-## Start supporting services:
-
-- Start Kafka on localhost:9092
-
-- Start Postgres for each service (or update application.yml with your DB credentials)
-
-    - Run each service:
-      ```bash
-      cd <service-name>
-      mvn spring-boot:run
-      ```
-    - Or package and run the JAR:
-      ```bash
-      mvn clean package
-      java -jar target/<service-name>-0.0.1-SNAPSHOT.jar
-      ```
-    - By default:
-
-      - Eureka Server → http://localhost:8761
-
-      - Config Server → http://localhost:8888
-
-      - API Gateway → http://localhost:8989
-      
-# Service & API overview
-
-## service-registry
-
-- Provides service discovery using Netflix Eureka Server.
-  
-- Allows services to register themselves and discover other services dynamically.
-
-## cloud-config-server
-- ***Configuration***
-    ```
-    spring:
-      config:
-        import: "optional:configserver:http://localhost:8888"
-    ```
-- Centralized configuration management for all microservices.
-
-- Stores common configuration in GitHub.
-
-- Each service reads the configuration from the config server.
-
-## api-gateway
-- ***Configuration***
-    ```
-      spring:
-        application:
-          name: GATEWAY-SERVICE
-        cloud:
-         gateway:
-           server:
-             webflux:
-               routes:
-                 - id: order-service
-                   uri: lb://ORDER-SERVICE
-                   predicates:
-                     - Path=/api/v1/orders/**
-                   filters:
-                     - name: Authentication
-                     - name: CircuitBreaker
-                       args:
-                         name: orderCircuitBreaker
-                         fallbackUri: forward:/orderFallBack
-    ```
-- Acts as a single entry point for client requests.
-
-- Handles routing, JWT Authentication, and forwards requests to the appropriate service.
-  
-## auth-service
-
-- JWT-based authentication and token validation
-
-### SignUP
-- **Signup Endpoint**: `POST http://localhost:8989/api/v1/auth/signup`
-   - ***Request Body***
-     ```json
-     {
-        "name": "user",
-        "email": "user@example.com",
-        "password": "Password123"
-     }
-     ```
-         
-  - ***Response***
-
-    ```json
-    {
-        "id": "123",
-        "name": "user",
-        "email": "user@example.com",
-        "createdAt": "2025-09-18T12:34:56"
-    }
-    ```
-### Login
-- **Endpoint**: `POST http://localhost:8989/api/v1/auth/login` 
-    - ***Request Body***
-      ```json
-      {
-        "email": "user@example.com",
-        "password": "Password123"
-      }
-      ```
-    - ***Response***
-    ```json
-    {
-        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-    }
-    ```
-## API Documentation
-
-Interactive API documentation is available via Swagger UI:
-
-[Auth Service Open API Docs](http://localhost:9090/swagger-ui/index.html)
-
-## product-service
-### Add Product
-- ***Endpoint***: `POST http://localhost:8989/api/v1/products`
-  - ***Request Body***
-    ```json
-    {
-        "name":"iPhone 8",
-        "description":"manufacture by iPhone 8",
-        "sku": "MOB-IPHONE-8",
-        "price": 80000
-    }
-    ```
-
-  - ***Response***
-    ```json
-    {
-        "id": "35646ac3-a642-4ccb-bfd2-27daf951ca38",
-        "sku": "MOB-IPHONE-8",
-        "name": "iPhone 8",
-        "description": "manufacture by iPhone 8",
-        "price": 80000
-    }
-    ```
-
-- Owns product catalog (name, price, SKU)
-
-- Emits outbox events for inventory.created event
-
-- Exposes CRUD APIs for products
-
-## API Documentation
-
-Interactive API documentation is available via Swagger UI:
-
-[Product Service Open API Docs](http://localhost:9091/swagger-ui/index.html)
-
-### Inventory API
-
-#### Adjust Inventory
-- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/adjust/{sku}/{quantity}`
-
-  - **Request Body**:
-  ```json
+**Example Response:**
+```json
+[
   {
-      "sku": "MOB-IPHONE-14",
-      "availableQty": 7,
-      "reserveQty": 0
-  }
-  ```
-
-#### Reserve Inventory
-- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/reverse/MOB-IPHONE14/2`
-
-  - **Request Body**:
-    ```json
-    {
-        "sku": "MOB-IPHONE-14",
-        "availableQty": 7,
-        "reserveQty": 2
+    "id": "0c1327c7-058b-4395-b687-89be684ca957",
+    "text": "Product: IPhone 17 | MOB | AI feature phone by Apple | ¥124,000",
+    "metadata": {
+      "entity_type": "Inventory",
+      "event": "inventory-adjust",
+      "distance": 0.4828494
     }
-    ```
+  }
+]
+```
 
-#### Check Product Availability
-- **Endpoint**: `POST http://localhost:8989/api/v1/inventories/availability`
-    - ***Request Body***
-      ```json
-      {
-          "orderItemList":[
-              {
-                  "sku":"MOB-IPHONE-8",
-                  "quantity":3
-              },
-              {
-                  "sku":"MOB-IPHONE-14",
-                  "quantity":2
-              }
-          ]
-      }
-      ```
-    - ***Response*** 
-      ```json
-      {
-          "itemAvailabilityDto":[
-              {
-                  "sku": "MOB-IPHONE-8",
-                  "requestedQty": 3,
-                  "availableQty": 15,
-                  "isAvailable": true
-              },
-              {
-                  "sku": "MOB-IPHONE-14",
-                  "requestedQty": 2,
-                  "availableQty": 7,
-                  "isAvailable": true
-              }
-          ]
-      }
-      ```
-      
-- Tracks stock levels per SKU
+The `distance` score is the cosine distance from the query vector. Lower = more semantically similar.
 
-- Consumes inventory.created an event to create an initial stock record, which is 0 at first entry.
+---
 
-- Adds stock by api
+### 2. Conversational AI (RAG Chat)
 
-- Consumes order.placed and produces inventory.reserved or inventory.release event.
+**Endpoint:** `POST /api/v1/agent/chat`
 
-## API Documentation
+This implements full **Retrieval-Augmented Generation**:
 
-Interactive API documentation is available via Swagger UI:
+```
+User Prompt ("Give me best AI feature phone list")
+    │
+    ▼
+Step 1 — RETRIEVE: Vector similarity search on pgvector
+         → Fetch top-K relevant product chunks
+    │
+    ▼
+Step 2 — AUGMENT: Inject retrieved products as context into the prompt
+         → "Answer based only on the following products: [...]"
+    │
+    ▼
+Step 3 — GENERATE: Ollama (Mistral model) generates grounded response
+    │
+    ▼
+Response: Natural language answer, factually grounded in your product catalog
+```
 
-[Inventory Service Open API Docs](http://localhost:9093/swagger-ui/index.html)
+**Why RAG instead of fine-tuning?**
 
-## order-service
-### Place Order
-- ***EndPoint***: `POST http://localhost:8989/api/v1/inventories/orders`
-    - ***Request Body***
-    ```json
-        {
-          "customerId": "1a0eb5b7-3ad4-4b37-86c6-e5c578e4a2c0",
-          "items":[
-            {
-              "productId":"4dde7f7b-7a98-4a03-9a4f-ab051609b3f5",
-              "name":"iPhone 8",
-              "price":80000,
-              "sku":"MOB-iPHONE-8",
-              "quantity":5
-            }
-          ]
-        }  
-    ```
-  
-    - ***Response***
-    ```json
-        {
-            "orderId": "47b5cfe1-bc84-40eb-b607-645bb860195f",
-            "status": "ORDER_PLACED",
-            "totalPrice": 80000
-        }
-    ```
-- Accepts orders and manages order state
+Fine-tuning an LLM on your product catalog is expensive, slow, and goes stale the moment your catalog changes. RAG gives you up-to-date, grounded answers because the retrieval step always hits the live vector store — no retraining needed.
 
-- Emits outbox events for order.placed
+**Why pgvector instead of a dedicated vector DB (Pinecone, Weaviate)?**
 
-- Publishes order.created, consumes inventory events, confirms or rejects
+pgvector runs inside PostgreSQL — the same DB the inventory service already uses. For this scale, it avoids operational overhead of a separate service. In production with millions of products, a dedicated vector DB would be the right call.
 
-- Implements a circuit breaker (Resilience4j) to gracefully handle failures during order processing, triggering a fallback that marks the order as pending or canceled, and uses the Outbox pattern to reliably schedule and publish the corresponding order events.
+---
 
-## API Documentation
+### How Product Data Enters the Vector Store
 
-Interactive API documentation is available via Swagger UI:
+The agent service is **event-driven** — it doesn't poll the product database. Instead:
 
-[Order Service Open API Docs](http://localhost:9094/swagger-ui/index.html)
+1. `inventory-service` publishes `inventory-adjust` events to Kafka
+2. `agent` consumes these events
+3. Each inventory item is embedded (converted to a vector) and stored in pgvector
 
-## agent
-### Search Product
-- ***EndPoint***: `GET http://localhost:8989/api/v1/agent/search?query=give_me_the_AI_feature_phone_list`
-  -  ***Response***
-  ```json
-      [
-      {
-        "id": "0c1327c7-058b-4395-b687-89be684ca957",
-        "text": "Product Information: The product 'IPhone 17' is a MOB item . Description: manufacture by IPhone with AI feature. It is priced at 124000.0 USD. Created on 2025-11-01T08:23:32.002044600Z.",
-        "metadata": {
-            "entity_type": "Inventory",
-            "event": "inventory-adjust",
-            "distance": 0.4828494        
-        }
-      },
-      {
-        "id": "d730624b-c8fa-453a-a3ee-ef85b52d0ae7",
-        "text": "Product Information: The product 'IPhone 11' is a MOB item . Description: manufacture by IPhone with AI feature, best display. It is priced at 124000.0 USD. Created on 2025-11-01T08:21:37.207281400Z.",
-        "metadata": {
-            "entity_type": "Inventory",
-            "event": "inventory-adjust",
-            "distance": 0.48921254        
-        }
-      }]
-  ```
-- ***EndPoint***: `POST http://localhost:8989/api/v1/agent/chat`
-  - ***Request Body***
-  ```
-  Prompt -> Give me best AI feature phone list
-  ```
+This means the AI knowledge base updates automatically whenever inventory changes — no manual sync needed.
 
-  - ***Response***
-     ```
-     Based on the provided context, all the listed feature phones are manufactured by either 
-     Apple (iPhone 11, iPhone 13, and iPhone 17) or Samsung (Samsung FE). All these devices include AI features.
-    ```
+---
 
-- This Agent service consumes inventory events.
-- Product data stored in pgvector (vector embeddings of inventory items)
-- Vector similarity search when user queries/chat or when recommending similar products.
-- Retrieved products (top-K similar vectors) are sent as context to Ollama.
-- Ollama model (e.g., Mistral) generates the answer, recommendation, or search result summary.
+## Key Engineering Decisions & Tradeoffs
 
-# Scalability & Event-Driven Design
+### Outbox Pattern
 
- ## Kafka Configuration
- ```
- kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+**Problem:** When `order-service` places an order, it must write to its own DB *and* publish a Kafka event. If the service crashes between the DB write and the Kafka publish, the event is lost.
 
-      acks: all
-      retries: 2147483647
-      properties:
-        enable.idempotence: true
-        max.in.flight.requests.per.connection: 5
-        compression.type: zstd
-        linger.ms: 50
-        batch.size: 65536
+**Solution:** Write the event to an `outbox` table in the *same DB transaction* as the business data. A scheduled job then reads unpublished outbox entries and publishes them to Kafka, marking them as sent.
+
+```
+Order Placed
+    │
+    ▼
+DB Transaction:
+  ├── INSERT into orders table
+  └── INSERT into outbox table (status=PENDING)
+    │
+    ▼
+Outbox Scheduler (every N ms):
+  └── SELECT * FROM outbox WHERE status=PENDING
+      → publish to Kafka
+      → UPDATE status=SENT
+```
+## Outbox Pattern flow
+
+<img width="1218" height="569" alt="Screenshot 2025-09-06 114545" src="https://github.com/user-attachments/assets/36cd02ad-945a-4007-b256-0ef27c186b6d" />
+
+
+**Tradeoff:** Events may be published more than once (at-least-once delivery). Consumers handle this with an idempotency check — each processed event ID is stored; duplicates are discarded.
+
+---
+
+### Circuit Breaker (Resilience4j)
+
+The API Gateway wraps each service route with a circuit breaker. If `order-service` is slow or down:
+- After a threshold of failures, the circuit **opens** — requests fail fast instead of queuing
+- A fallback endpoint returns a graceful degraded response
+- After a timeout, the circuit goes **half-open** to probe recovery
+
+This prevents one slow service from cascading failures across the entire system.
+
+---
+
+### Idempotent Kafka Producers
+
+```yaml
+producer:
+  acks: all                          # All ISR replicas must acknowledge
+  enable.idempotence: true           # Exactly-once semantics at producer level
+  max.in.flight.requests.per.connection: 5
+  retries: 2147483647                # Retry forever — Kafka handles dedup
+```
+
+`acks=all` + `enable.idempotence=true` guarantees that even if the producer retries on a timeout, Kafka deduplicates the message — so it's written exactly once to the log.
+
+---
+
+### Kafka Scalability Design
+
+This system is designed to support **millions of events per day** through deliberate Kafka configuration:
+
+```yaml
+kafka:
+  bootstrap-servers: localhost:9092
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    acks: all
+    retries: 2147483647
+    properties:
+      enable.idempotence: true
+      max.in.flight.requests.per.connection: 5
+      compression.type: zstd       # Reduces network + disk I/O significantly
+      linger.ms: 50                # Batches messages for 50ms before sending
+      batch.size: 65536            # 64KB batch size for high throughput
   consumer:
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
   listener:
-    ack-mode: manual_immediate
-    group-id: inventory-group
-    enable-auto-commit: false 
-    auto-offset-reset: earliest             
+    ack-mode: manual_immediate     # Commit offset only after successful DB write
+    enable-auto-commit: false      # Prevents data loss on consumer crash
+    auto-offset-reset: earliest
     properties:
-      max.poll.records: 500                 
+      max.poll.records: 500        # Process up to 500 records per poll cycle
 ```
 
+**How this scales horizontally:**
 
+| Practice | What it enables |
+|---|---|
+| **8+ partitions per topic** | Parallel consumption across multiple consumer instances |
+| **Consumer groups per service** | Each service (`inventory-group`, `order-group`) scales independently |
+| **Manual offset commit** | Offsets committed only after successful DB transaction — no data loss on crash |
+| **Idempotent producers** | Safe retries without duplicate events in the log |
+| **Processed-event dedup table** | Each consumer tracks processed event IDs — replayed messages are discarded |
+| **Outbox → future Debezium CDC** | Outbox pattern can be replaced with Debezium for near-real-time, zero-polling delivery |
 
-**This system is designed with Kafka-based event streaming to ensure horizontal scalability and high throughput. 
-The architecture supports processing millions of events per day by leveraging the following practices:**
+> To handle 1M+ order events: increase partitions, add consumer instances (Kafka rebalances automatically), scale brokers if needed.
 
-- Partitioned Topics
+---
 
-  - Each topic (e.g., order.placed, product.created) is created with 8+ partitions.
+## Tech Stack
 
-  - Partitions enable parallel consumption so we can scale horizontally by adding more consumers.
- 
- - Consumer Groups
+| Layer | Technology |
+|---|---|
+| Language | Java 21 |
+| Framework | Spring Boot 3, Spring Cloud 2025 |
+| Service Discovery | Netflix Eureka |
+| Config Management | Spring Cloud Config Server (GitHub-backed) |
+| API Gateway | Spring Cloud Gateway (WebFlux) |
+| Messaging | Apache Kafka |
+| AI / ML | Spring AI, Ollama (Mistral), pgvector |
+| Persistence | JPA/Hibernate, PostgreSQL (one DB per service) |
+| Security | Spring Security, JWT |
+| Resilience | Resilience4j (Circuit Breaker) |
+| Testing | JUnit 5, Mockito, AssertJ |
+| Containerization | Docker, Docker Compose |
 
-   - Each microservice runs in its own consumer group (e.g., inventory-group, analytics-group).
+---
 
-   - Adding new instances automatically balances partitions across consumers for higher throughput.
+## Testing Strategy
 
-- Idempotent & Reliable Event Processing
+Tests follow the **test pyramid** — many fast unit tests at the base, fewer slower integration tests above.
 
-  - Idempotent producers (acks=all, enable.idempotence=true) prevent duplicate events.
+| Layer | Tool | What's tested | Example |
+|---|---|---|---|
+| **Unit** | JUnit 5 + Mockito | Domain logic, use cases — no Spring context, no DB | Order rejection when stock insufficient |
+| **Integration** | `@DataJpaTest` | JPA mappings, outbox writes, repository queries | Outbox entry persisted with `PENDING` status |
+| **Slice** | `@WebMvcTest` | REST controllers — web layer only, services mocked | `POST /products` returns 201 with correct SKU |
 
-  - Consumers use manual offset commit — offsets are committed only after successful database transactions. ( disable auto-commit = false )
+**Key principle:** The domain layer has zero dependencies on Spring, Kafka, or JPA — so unit tests run in milliseconds with no infrastructure.
 
-  - Processed-event table in each service ensures that replayed messages don’t cause duplicate updates.
+> Full test suite: [`src/test/`](./src/test/) — auth service has its own test module mirroring the production package structure.
 
-- Outbox Pattern
-  
-  - Each service publishes events using an outbox table + scheduled job.
+---
 
-  - This ensures atomicity between database writes and event publishing.
+### Service URLs
 
-  -  In production, this can be easily replaced with Debezium CDC for near-real-time streaming.
+| Service | URL |
+|---|---|
+| Eureka Dashboard | http://localhost:8761 |
+| Config Server | http://localhost:8888 |
+| API Gateway | http://localhost:8989 |
+| Auth Swagger | http://localhost:9090/swagger-ui/index.html |
+| Product Swagger | http://localhost:9091/swagger-ui/index.html |
+| Inventory Swagger | http://localhost:9093/swagger-ui/index.html |
+| Order Swagger | http://localhost:9094/swagger-ui/index.html |
 
-- Horizontal Scalability
+---
 
-  - To handle 1M+ order events, we can:
+## API Documentation
 
-  - Increase partitions (more parallelism).
+All services expose interactive Swagger UI documentation. Full request/response examples are available at each service's `/swagger-ui/index.html`.
 
-  - Add more consumer instances (automatic rebalancing).
+### Quick Reference
 
-  - Scale Kafka brokers if needed (cluster supports partition distribution).
+#### Auth
+```
+POST /api/v1/auth/signup    # Register user
+POST /api/v1/auth/login     # Get JWT tokens
+```
 
-    
-## Outbox Pattern flow
+#### Products
+```
+POST   /api/v1/products         # Create product (triggers inventory.created event)
+GET    /api/v1/products         # List all products
+GET    /api/v1/products/{id}    # Get product by ID
+```
 
-<img width="1218" height="569" alt="Screenshot 2025-09-06 114545" src="https://github.com/user-attachments/assets/36cd02ad-945a-4007-b256-0ef27c186b6d" />
+#### Inventory
+```
+POST /api/v1/inventories/adjust/{sku}/{qty}    # Add stock
+POST /api/v1/inventories/availability          # Check multi-SKU availability
+```
+
+#### Orders
+```
+POST /api/v1/orders    # Place order (triggers order saga)
+GET  /api/v1/orders    # List orders
+```
+
+#### Agent (AI)
+```
+GET  /api/v1/agent/search?query=...    # Semantic vector search
+POST /api/v1/agent/chat                # RAG-powered conversational search
+```
 
 
 
