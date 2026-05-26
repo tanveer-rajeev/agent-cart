@@ -1,8 +1,8 @@
 spring:
   application:
-    name: GATEWAY-SERVICE
+    name: API-GATEWAY
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import: "configserver:http://cloud-config-server:8888"
   cloud:
     gateway:
       server:
@@ -29,10 +29,10 @@ spring:
                 - Path=/api/v1/auth/**
               filters:
                 - name: Authentication
-                - name: CircuitBreaker
-                  args:
-                    name: identityCircuitBreaker
-                    fallbackUri: forward:/identityFallBack
+#                - name: CircuitBreaker
+#                  args:
+#                    name: identityCircuitBreaker
+#                    fallbackUri: forward:/identityFallBack
 
             - id: product-service
               uri: lb://PRODUCT-SERVICE
@@ -72,13 +72,16 @@ server:
 
 auth:
   service:
-    url: http://AUTH-SERVICE
+    url: lb://AUTH-SERVICE
 
 management:
   endpoints:
     web:
       exposure:
-        include: metrics, health, info
+        include: metrics, health, info, gateway
+  endpoint:
+    gateway:
+      enabled: true
 
 resilience4j:
   timelimiter:

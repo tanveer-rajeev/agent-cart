@@ -15,13 +15,15 @@ public class AuthenticationGatewayFilterFactory extends AbstractGatewayFilterFac
 
     private final RouteValidator validator;
     private final WebClient webClient;
+    private final String authServiceUrl;
 
     public AuthenticationGatewayFilterFactory(WebClient.Builder webClientBuilder,
                                               RouteValidator routeValidator,
                                               @Value("${auth.service.url}") String authServiceUrl) {
 
-        this.webClient = webClientBuilder.baseUrl(authServiceUrl).build();
+        this.webClient = webClientBuilder.build();
         this.validator = routeValidator;
+        this.authServiceUrl = authServiceUrl;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class AuthenticationGatewayFilterFactory extends AbstractGatewayFilterFac
                 }
 
                 return webClient.get()
-                        .uri("/api/v1/auth/validate")
+                        .uri(authServiceUrl +"/api/v1/auth/validate")
                         .header(HttpHeaders.AUTHORIZATION, authHeader)
                         .retrieve()
                         .toBodilessEntity()
