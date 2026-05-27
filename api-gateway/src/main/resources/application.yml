@@ -7,7 +7,6 @@ spring:
     gateway:
       server:
         webflux:
-
           httpclient:
             connect-timeout: 10000
             response-timeout: 300000
@@ -29,10 +28,10 @@ spring:
                 - Path=/api/v1/auth/**
               filters:
                 - name: Authentication
-#                - name: CircuitBreaker
-#                  args:
-#                    name: identityCircuitBreaker
-#                    fallbackUri: forward:/identityFallBack
+                - name: CircuitBreaker
+                  args:
+                    name: identityCircuitBreaker
+                    fallbackUri: forward:/identityFallBack
 
             - id: product-service
               uri: lb://PRODUCT-SERVICE
