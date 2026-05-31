@@ -6,42 +6,4 @@ spring:
   application:
     name: product-service
   config:
-    import: "optional:configserver:http://localhost:8888"
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/product-service
-    username: postgres
-    password: root
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
-
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-      acks: all
-      retries: 2147483647
-      properties:
-        enable.idempotence: true
-        max.in.flight.requests.per.connection: 5
-        compression.type: zstd
-        linger.ms: 50
-        batch.size: 65536
-
-topic:
-  map:
-    product-created: product-created
-    product-updated: product-updated
-
-logging:
-  level:
-    root: INFO
-    com.tanveer.product-service: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
+    import: "configserver:${CONFIG_SERVER_URL:http://cloud-config-server:8888}"

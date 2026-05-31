@@ -3,35 +3,6 @@ server:
 
 spring:
   application:
-    name: AUTH-SERVICE
+    name: auth-service
   config:
-    import: "optional:configserver:http://localhost:8888"
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/auth-service
-    username: postgres
-    password: root
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
-security:
-  jwt:
-    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-    expiration: 86400000
-    refresh-token:
-      expiration: 604800000
-
-  customCipherConfig:
-    encoder:
-      secret: 01$3456789A4C71#
-      iv: 01$3456789A4C71#
-
-logging:
-  level:
-    root: INFO
-    com.tanveer.auth-service: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
+    import: "configserver:${CONFIG_SERVER_URL:http://cloud-config-server:8888}"

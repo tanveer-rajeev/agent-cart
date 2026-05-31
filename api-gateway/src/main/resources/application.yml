@@ -1,15 +1,17 @@
+
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:http://localhost:9090}
+
 spring:
   application:
-    name: API-GATEWAY
+    name: api-gateway
   config:
-    import: "configserver:http://cloud-config-server:8888"
+    import: "configserver:${CONFIG_SERVER_URL:http://cloud-config-server:8888}"
   cloud:
     gateway:
       server:
         webflux:
-          httpclient:
-            connect-timeout: 10000
-            response-timeout: 300000
           routes:
             - id: order-service
               uri: lb://ORDER-SERVICE
@@ -65,53 +67,3 @@ spring:
                   args:
                     name: agentCircuitBreaker
                     fallbackUri: forward:/agentFallBack
-
-server:
-  port: 8989
-
-auth:
-  service:
-    url: lb://AUTH-SERVICE
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: metrics, health, info, gateway
-  endpoint:
-    gateway:
-      enabled: true
-
-resilience4j:
-  timelimiter:
-    configs:
-      default:
-        timeout-duration: 300s
-  circuitbreaker:
-    configs:
-      default:
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        registerHealthIndicator: true
-    instances:
-      paymentCircuitBreaker:
-        baseConfig: default
-      orderCircuitBreaker:
-        baseConfig: default
-      identityCircuitBreaker:
-        baseConfig: default
-      productCircuitBreaker:
-        baseConfig: default
-      inventoryCircuitBreaker:
-        baseConfig: default
-      agentCircuitBreaker:
-        baseConfig: default
-
-logging:
-  level:
-    root: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}.%M - %msg%n"
