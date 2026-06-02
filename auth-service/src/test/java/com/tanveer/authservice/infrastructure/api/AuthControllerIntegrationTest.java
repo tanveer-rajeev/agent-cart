@@ -1,7 +1,6 @@
 package com.tanveer.authservice.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tanveer.authservice.domain.UserRepository;
 import com.tanveer.authservice.infrastructure.dto.SignUpRequestDto;
 import com.tanveer.authservice.infrastructure.persistance.UserJpaRepository;
 import org.junit.jupiter.api.AfterEach;

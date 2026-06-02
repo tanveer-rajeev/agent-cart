@@ -3,6 +3,6 @@ server:
 
 spring:
   application:
-    name: AGENT
+    name: agent
   config:
     import: "configserver:${CONFIG_SERVER_URL:http://cloud-config-server:8888}"
