@@ -4,6 +4,6 @@ import com.tanveer.authservice.infrastructure.exception.CustomException;
 
 public interface UserRepository {
     User save(User user);
-    User update(User user,String id);
+    User update(User user,String id) throws CustomException;
     User findByEmail(String email) throws CustomException;
 }

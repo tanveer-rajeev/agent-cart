@@ -1,7 +1,6 @@
 package com.tanveer.authservice.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tanveer.authservice.domain.UserRepository;
 import com.tanveer.authservice.infrastructure.dto.SignUpRequestDto;
 import com.tanveer.authservice.infrastructure.persistance.UserJpaRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -10,17 +9,27 @@ import org.junit.jupiter.api.extension.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 class AuthControllerIntegrationTest {
 
     private static final String BASE_URL = "/api/v1/auth";
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,6 +43,12 @@ class AuthControllerIntegrationTest {
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
+    }
+
+    @Test
+    void connectionEstablished() {
+        assertThat(postgres.isCreated()).isTrue();
+        assertThat(postgres.isRunning()).isTrue();
     }
 
     @Test

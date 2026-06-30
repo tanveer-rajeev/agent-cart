@@ -29,21 +29,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User update(User user, String id) {
+    public User update(User user, String id) throws CustomException {
 
-        Optional<UserEntity> existingUser =
-                userJpaRepository.findByEmail(user.getEmail());
+        Optional<UserEntity> existingUser = userJpaRepository.findByEmail(user.getEmail());
 
-        if (existingUser.isPresent()
-                && !existingUser.get().getId().equals(id)) {
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(id)) {
             throw new ResourceConflictException("Email already exist");
         }
 
-        return UserMapper.entityToDomain(
-                userJpaRepository.saveAndFlush(
-                        UserMapper.domainToEntity(user)
-                )
-        );
+        UserEntity entity = userJpaRepository.findById(id)
+                .orElseThrow(() -> new CustomException("User not found"));
+
+        entity.setEmail(user.getEmail());
+        entity.setPassword(user.getPassword());
+        entity.setRole(user.getRole());
+
+        return UserMapper.entityToDomain(userJpaRepository.saveAndFlush(entity));
     }
 
     @Override
